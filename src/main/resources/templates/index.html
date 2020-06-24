@@ -12,14 +12,70 @@
 	<div layout:fragment="content">
 		<h1>File 2 PNG 2 File</h1>
 
-		
-	<form action="#" th:action="@{/action}"  method="post">
-    	
-        <p><input type="submit" value="Convertir fichero en png" /> </p>
-    </form>
+		<H2>Ficheros</H2>
+		<table border="1">
+			<tr>
+				<td>Id</td>
+				<td>Nombre</td>
+				<td>Ext.</td>
+				<td>Tamano</td>
+				<td>Partes</td>
+				<td>Fecha</td>
+				<td>Action</td>
+			</tr>
+			<tr th:each="fichero : ${ficheros}">
+				<td th:text="${fichero?.Id}">id</td>
+				<td th:text="${fichero?.nombre}">name</td>
+				<td th:text="${fichero?.extension}">extension</td>
+				<td th:text="${fichero?.bytes}">bytes</td>
+				<td></td>
+				<!-- <td th:text="${fichero?.fechaCreacion}">fechaCreacion</td> -->
+				<td th:text="${fichero?.partes}">Partes</td>
+				<td><a th:href="@{/fichero/delete/{id}(id=${fichero.Id})}">Delete</a>
+					/ <a th:href="@{/fichero/download/{id}(id=${fichero.Id})}">Download</a>
+				</td>
+			</tr>
+		</table>
 
 
+		<h1>Formulario</h1>
+		<form action="#" th:action="@{/fichero/add}" th:object="${fichero}"
+			method="post" enctype="multipart/form-data">
 
+			<p>
+				Nombre: <input type="file" th:field="*{ruta}" />
+			</p>
+			<p>
+				<input type="submit" value="Submit" /> <input type="reset"
+					value="Reset" />
+			<form action="#" th:action="@{/action}" method="post">
+
+				<p>
+					<input type="submit" value="Convertir fichero en png" />
+				</p>
+			</form>
+
+
+			<form action="#" th:action="@{/convert}" method="post">
+
+				<p>
+					<input type="submit" value="Convert image to file" />
+				</p>
+			</form>
+
+			<form action="#" th:action="@{/upload}" method="post">
+
+				<p>
+					<input type="submit" value="Upload File" />
+				</p>
+			</form>
+
+			<form action="#" th:action="@{/download}" method="post">
+
+				<p>
+					<input type="submit" value="Download File" />
+				</p>
+			</form>
 	</div>
 
 </body>

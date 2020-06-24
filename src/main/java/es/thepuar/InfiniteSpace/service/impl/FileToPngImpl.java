@@ -2,11 +2,7 @@ package es.thepuar.InfiniteSpace.service.impl;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 import javax.imageio.ImageIO;
 
@@ -18,6 +14,9 @@ import es.thepuar.InfiniteSpace.service.api.FileToPng;
 @Service
 public class FileToPngImpl implements FileToPng {
 
+	private final int sizeX = 1920;
+	private final int sizeY = 1080;
+	
 	@Override
 	public void test() {
 		File f = new File("H:\\Documentos\\InfiniteSpace\\zhola.pdf");
@@ -25,12 +24,14 @@ public class FileToPngImpl implements FileToPng {
 		try {
 			FileInputStream in = new FileInputStream(f);
 			byte[] bytes = IOUtils.toByteArray(in);
-
+			in.close();
 			System.out.println("Numero de bytes " + bytes.length);
 
 			byte[] result = completeBytes(bytes);
 			System.out.println("Bytes leidos de zhola.pdf " + result.length);
 			createPng(result);
+
+		//	createFromImage(null);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -39,7 +40,7 @@ public class FileToPngImpl implements FileToPng {
 	}
 
 	private byte[] completeBytes(byte[] bytes) {
-		int tamanyo = 1920 * 1080 * 3;
+		int tamanyo = sizeX * sizeY * 3;
 		byte[] result = new byte[tamanyo];
 		for (int i = 0; i < tamanyo; i++) {
 			if (bytes.length > i) {
@@ -52,8 +53,7 @@ public class FileToPngImpl implements FileToPng {
 	}
 
 	private void createPng(byte[] bytes) {
-		int sizeX = 1920;
-		int sizeY = 1080;
+		
 		int position = 0;
 		// Constructs a BufferedImage of one of the predefined image types.
 		BufferedImage bufferedImage = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_INT_RGB);
@@ -70,11 +70,14 @@ public class FileToPngImpl implements FileToPng {
 			}
 		}
 		File outputfile = new File("H:\\Documentos\\InfiniteSpace\\zhola.png");
+
 		try {
 			ImageIO.write(bufferedImage, "png", outputfile);
+
 			System.out.println("Imagen creada");
 
-			createFromImage(outputfile);
+
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -82,7 +85,7 @@ public class FileToPngImpl implements FileToPng {
 	}
 
 	private void createFromImage(File f) {
-		byte[] data = new byte[1920 * 1080 * 3];
+		byte[] data = new byte[sizeX * sizeY* 3];
 		try {
 			BufferedImage bufferedImage = ImageIO.read(f);
 			int position = 0;
@@ -111,6 +114,8 @@ public class FileToPngImpl implements FileToPng {
 			e.printStackTrace();
 		}
 	}
+	
+	
 
 	private byte[] purgeEmptyData(byte[] bytes) {
 		byte[] result = null;
@@ -133,6 +138,12 @@ public class FileToPngImpl implements FileToPng {
 		}
 		System.out.println("Numero de bytes tras la purga " + posicionFinal);
 		return result;
+	}
+
+	@Override
+	public void convertFile2Png() {
+		createFromImage( new File("H:\\Documentos\\InfiniteSpace\\zfinal2.png"));
+		
 	}
 
 	// byte[] pixels = ((DataBufferByte)

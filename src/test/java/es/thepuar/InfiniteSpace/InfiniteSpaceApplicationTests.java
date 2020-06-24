@@ -10,14 +10,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
+//@ExtendWith(SpringExtension.class)
+//@SpringBootTest
 class InfiniteSpaceApplicationTests {
 
 	@Autowired
 	FileToPng fileToPng;
 
-	@Test
+//	@Test
 	void contextLoads() {
 		fileToPng.test();
 		assertThat(fileToPng).isNotNull();

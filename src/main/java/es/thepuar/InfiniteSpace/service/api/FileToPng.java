@@ -4,4 +4,6 @@ public interface FileToPng {
 
 	
 	public void test();
+	
+	public void convertFile2Png();
 }
