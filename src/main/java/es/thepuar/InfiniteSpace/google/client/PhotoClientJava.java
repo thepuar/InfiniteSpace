@@ -14,6 +14,9 @@ import com.google.photos.types.proto.MediaItem;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
 import es.thepuar.InfiniteSpace.factory.PhotosLibraryClientFactory;
+import es.thepuar.InfiniteSpace.model.MapEntryPhoto;
+import es.thepuar.InfiniteSpace.model.Referencia;
+
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -23,9 +26,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -115,13 +118,25 @@ public class PhotoClientJava {
 
 	}
 
+	public List<Referencia> downloadFichero(List<MapEntryPhoto> partes) {
+
+		List<Referencia> result = new ArrayList<>();
+		for (MapEntryPhoto entry : partes) {
+			MediaItem item = this.client.getMediaItem(entry.getMediaId());
+			String url = item.getBaseUrl() + "=w1920-h1080";
+			String ruta = "Z:\\InfiniteSpace\\temp" + Calendar.getInstance().getTimeInMillis() + ".png";
+			result.add(new Referencia(ruta, entry));
+			this.downloadFromUrl(url, ruta);
+		}
+		return result;
+	}
+
 	public void downloadImage() {
 		MediaItem item = this.client.getMediaItem(this.myId);
 		String url = item.getBaseUrl() + "=w1920-h1080";
 		System.out.println("URL: " + url);
 
-		this.downloadFromUrl(url,
-				"H:\\Documentos\\InfiniteSpace\\temp" + Calendar.getInstance().getTimeInMillis() + ".png");
+		this.downloadFromUrl(url, "Z:\\InfiniteSpace\\temp" + Calendar.getInstance().getTimeInMillis() + ".png");
 	}
 
 	public void downloadFromUrl(String url, String file) {

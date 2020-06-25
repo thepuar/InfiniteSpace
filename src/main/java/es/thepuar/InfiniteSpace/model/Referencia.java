@@ -5,6 +5,11 @@ import lombok.Data;
 @Data
 public class Referencia {
 
-	MapEntryPhotos entry;
+	MapEntryPhoto entry;
 	String ruta;
+	
+	public Referencia(String ruta, MapEntryPhoto entry) {
+		this.ruta = ruta;
+		this.entry = entry;
+	}
 }
