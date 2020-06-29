@@ -60,6 +60,55 @@ public class PhotoClientJava {
 		return this.client;
 	}
 
+	public void uploadFiles(List<Referencia> referencias){
+		UploadMediaItemRequest uploadRequest;
+		RandomAccessFile file = null;
+
+		for(Referencia referencia : referencias){
+			try {
+				file = new RandomAccessFile(referencia.getRuta(), "r");
+				uploadRequest = UploadMediaItemRequest.newBuilder().setMimeType("image/png").setDataFile(file).build();
+				UploadMediaItemResponse uploadResponse = this.client.uploadMediaItem(uploadRequest);
+				try {
+					file.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				if (uploadResponse.getError().isPresent()) {
+					UploadMediaItemResponse.Error error = uploadResponse.getError().get();
+					error.getCause().printStackTrace();
+				}else {
+					String uploadToken = uploadResponse.getUploadToken().get();
+					System.out.println("Token " + uploadToken);
+
+					try {
+						NewMediaItem newMediaItem = NewMediaItemFactory.createNewMediaItem(uploadToken, "zhola",
+								"No soy un pdf");
+						List<NewMediaItem> newItems = Arrays.asList(newMediaItem);
+
+						BatchCreateMediaItemsResponse response = this.client.batchCreateMediaItems(newItems);
+						for (NewMediaItemResult itemsResponse : response.getNewMediaItemResultsList()) {
+							Status status = itemsResponse.getStatus();
+							if (status.getCode() == Code.OK_VALUE) {
+								MediaItem createdItem = itemsResponse.getMediaItem();
+								System.out.println("Subido Id " + createdItem.getId());
+								this.myId = createdItem.getId();
+								referencia.getEntry().setMediaId(myId);
+							} else {
+								// The item could not be created. Check the status and try again
+							}
+						}
+					} catch (ApiException e) {
+						e.printStackTrace();
+					}
+
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public void uploadFile() {
 
 		UploadMediaItemRequest uploadRequest;

@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
       layout:decorate="@{~/layout/simple-layout}">
+
 <head>
     <meta charset="UTF-8"/>
     <title>Vacio</title>
@@ -15,18 +16,14 @@
 </head>
 <body>
 <div class="container">
-    <form action="#" th:action="@{/path}" method="post" th:object="${form}" >
-        <input type="text" th:field="*{ruta}"/>
-        <input type="submit" value="Cambiar de ruta"/>
-    </form>
 
-    <div th:insert="fragments/fragment_tables.html :: tabla_directorio"></div>
-    <div th:insert="fragments/fragment_tables.html :: tabla_ficheros"></div>
+    <div th:text="${fichero.nombreYExtenxion}" class=" p-3 mb-2 bg-primary text-white "></div>
+    <a th:href="@{/}">Inicio</a>
+
+    <div th:insert="fragments/fragment_tables.html :: tabla_map_entry"></div>
 
 
 
-
-    <h1>Formularios</h1>
 
     <form action="#" th:action="@{/action}" method="post">
 

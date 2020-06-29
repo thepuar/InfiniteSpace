@@ -38,4 +38,12 @@ public class Fichero {
 			return file.getAbsolutePath();
 	}
 
+	public String getNombreYExtenxion(){
+		StringBuilder builder = new StringBuilder();
+		builder.append(this.getNombre());
+		builder.append(".");
+		builder.append(this.getExtension());
+		return builder.toString();
+	}
+
 }

@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.protobuf.MapEntry;
+import es.thepuar.InfiniteSpace.google.client.PhotoClientJava;
+import es.thepuar.InfiniteSpace.model.MapEntryPhoto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,10 +31,23 @@ public class FicheroController {
 	FicheroService ficheroService;
 	
 	@Autowired
-	MapEntryPhotoService mapEntryPhotoDao;
+	MapEntryPhotoService mapEntryPhotoService;
+
+	@Autowired
+	PhotoClientJava photoService;
 
 	@Autowired
 	FileToPng fileService;
+
+	@GetMapping("{id}")
+	public ModelAndView detail(@PathVariable("id")Long id){
+		Fichero fichero = this.ficheroService.findById(id);
+		ModelAndView mav = new ModelAndView("fichero_detail");
+		mav.addObject("fichero",fichero);
+		List<MapEntryPhoto> partes = this.mapEntryPhotoService.findByFichero(fichero);
+		mav.addObject("partes",partes);
+		return mav;
+	}
 
 	@PostMapping("/add")
 	public ModelAndView addFile(@ModelAttribute Fichero fichero) {
@@ -113,10 +129,14 @@ public class FicheroController {
 				Fichero fichero = ficheroService.fileToFichero(toSplit);
 				List<Referencia> referencias = this.fileService.convertFichero2Png(fichero);
 				this.ficheroService.save(fichero);
+				this.photoService.uploadFiles(referencias);
 				for(Referencia referencia : referencias) {
-					this.mapEntryPhotoDao.save(referencia.getEntry());
+					this.mapEntryPhotoService.save(referencia.getEntry());
 				}
+
 			}
+
+
 
 		}
 		return new ModelAndView("redirect:/");
