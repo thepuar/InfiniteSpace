@@ -23,4 +23,6 @@ public interface FicheroService {
 	
 	public Fichero fileToFichero(File f);
 
+	public void compareFile(String fileA, String fileB);
+
 }

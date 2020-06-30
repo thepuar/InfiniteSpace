@@ -14,9 +14,11 @@ import com.google.photos.types.proto.MediaItem;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
 import es.thepuar.InfiniteSpace.factory.PhotosLibraryClientFactory;
+import es.thepuar.InfiniteSpace.manager.ResourceManager;
 import es.thepuar.InfiniteSpace.model.MapEntryPhoto;
 import es.thepuar.InfiniteSpace.model.Referencia;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -40,6 +42,9 @@ public class PhotoClientJava {
 			"https://www.googleapis.com/auth/photoslibrary.readonly",
 			"https://www.googleapis.com/auth/photoslibrary.appendonly");
 
+	@Autowired
+	ResourceManager resourceManager;
+
 	private PhotosLibraryClient client = null;
 
 	private String myId;
@@ -47,7 +52,7 @@ public class PhotoClientJava {
 	@PostConstruct
 	public void initialize() {
 		try {
-			client = PhotosLibraryClientFactory.createClient("H:\\Documentos\\InfiniteSpace\\thepuarcredential.json",
+			client = PhotosLibraryClientFactory.createClient(resourceManager.getProperty("ruta_credential")+ "\\"+resourceManager.getProperty("fichero_credenciales"),
 					REQUIRED_SCOPES);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -173,7 +178,7 @@ public class PhotoClientJava {
 		for (MapEntryPhoto entry : partes) {
 			MediaItem item = this.client.getMediaItem(entry.getMediaId());
 			String url = item.getBaseUrl() + "=w1920-h1080";
-			String ruta = "Z:\\InfiniteSpace\\temp" + Calendar.getInstance().getTimeInMillis() + ".png";
+			String ruta = resourceManager.getProperty("ruta_descarga")+"\\" + Calendar.getInstance().getTimeInMillis() + ".png";
 			result.add(new Referencia(ruta, entry));
 			this.downloadFromUrl(url, ruta);
 		}
@@ -185,7 +190,7 @@ public class PhotoClientJava {
 		String url = item.getBaseUrl() + "=w1920-h1080";
 		System.out.println("URL: " + url);
 
-		this.downloadFromUrl(url, "Z:\\InfiniteSpace\\temp" + Calendar.getInstance().getTimeInMillis() + ".png");
+		this.downloadFromUrl(url, resourceManager.getProperty("ruta_descarga")+"\\" + Calendar.getInstance().getTimeInMillis() + ".png");
 	}
 
 	public void downloadFromUrl(String url, String file) {
@@ -200,6 +205,7 @@ public class PhotoClientJava {
 			}
 		} catch (IOException e) {
 			// handle exception
+			e.printStackTrace();
 		}
 
 	}

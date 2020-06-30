@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.protobuf.MapEntry;
 import es.thepuar.InfiniteSpace.google.client.PhotoClientJava;
 import es.thepuar.InfiniteSpace.model.MapEntryPhoto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,119 +26,125 @@ import es.thepuar.InfiniteSpace.service.api.MapEntryPhotoService;
 @RequestMapping("/fichero")
 public class FicheroController {
 
-	@Autowired
-	FicheroService ficheroService;
-	
-	@Autowired
-	MapEntryPhotoService mapEntryPhotoService;
+    @Autowired
+    FicheroService ficheroService;
 
-	@Autowired
-	PhotoClientJava photoService;
+    @Autowired
+    MapEntryPhotoService mapEntryPhotoService;
 
-	@Autowired
-	FileToPng fileService;
+    @Autowired
+    PhotoClientJava photoService;
 
-	@GetMapping("{id}")
-	public ModelAndView detail(@PathVariable("id")Long id){
-		Fichero fichero = this.ficheroService.findById(id);
-		ModelAndView mav = new ModelAndView("fichero_detail");
-		mav.addObject("fichero",fichero);
-		List<MapEntryPhoto> partes = this.mapEntryPhotoService.findByFichero(fichero);
-		mav.addObject("partes",partes);
-		return mav;
-	}
+    @Autowired
+    FileToPng fileService;
 
-	@PostMapping("/add")
-	public ModelAndView addFile(@ModelAttribute Fichero fichero) {
-		this.ficheroService.completeFichero(fichero);
-		this.ficheroService.save(fichero);
-		this.ficheroService.uploadFile(fichero);
+    @GetMapping("{id}")
+    public ModelAndView detail(@PathVariable("id") Long id) {
+        Fichero fichero = this.ficheroService.findById(id);
+        ModelAndView mav = new ModelAndView("fichero_detail");
+        mav.addObject("fichero", fichero);
+        List<MapEntryPhoto> partes = this.mapEntryPhotoService.findByFichero(fichero);
+        mav.addObject("partes", partes);
+        return mav;
+    }
 
-		return new ModelAndView("redirect:/");
-	}
+    @PostMapping("/add")
+    public ModelAndView addFile(@ModelAttribute Fichero fichero) {
+        this.ficheroService.completeFichero(fichero);
+        this.ficheroService.save(fichero);
+        this.ficheroService.uploadFile(fichero);
 
-	@GetMapping("delete/{id}")
-	public ModelAndView removeFile(@PathVariable("id") Long id) {
-		
-		this.ficheroService.delete(this.ficheroService.findById(id));
-		return new ModelAndView("redirect:/");
-	}
+        return new ModelAndView("redirect:/");
+    }
 
-	@GetMapping("download/{id}")
-	public ModelAndView downloadFile(@PathVariable("id") Long id) {
-		return new ModelAndView("redirect:/");
-	}
+    @GetMapping("delete/{id}")
+    public ModelAndView removeFile(@PathVariable("id") Long id) {
 
-	@GetMapping("upload/{id}")
-	public ModelAndView uploadFile(@PathVariable("id") Long id) {
-		Fichero fichero = this.ficheroService.findById(id);
-		fichero.setUploaded(true);
-		this.ficheroService.save(fichero);
+        this.ficheroService.delete(this.ficheroService.findById(id));
+        return new ModelAndView("redirect:/");
+    }
 
-		return new ModelAndView("redirect:/");
-	}
+    @GetMapping("download/{id}")
+    public ModelAndView downloadFile(@PathVariable("id") Long id) {
+        Fichero fichero = this.ficheroService.findById(id);
+        if (fichero != null)
+            this.ficheroService.downloadFile(fichero);
+        return new ModelAndView("redirect:/");
+    }
 
-	@GetMapping("directorio")
-	public ModelAndView getRuta() {
+    @GetMapping("upload/{id}")
+    public ModelAndView uploadFile(@PathVariable("id") Long id) {
+        Fichero fichero = this.ficheroService.findById(id);
+        fichero.setUploaded(true);
+        this.ficheroService.save(fichero);
 
-		return new ModelAndView("redirect:/");
+        return new ModelAndView("redirect:/");
+    }
 
-	}
+    @GetMapping("directorio")
+    public ModelAndView getRuta() {
 
-	@GetMapping("split/{id}")
-	public ModelAndView split(@PathVariable("id") Long id) {
-		File directorio = new File("Z:\\App\\InfiniteSpace\\upload");
-		File toSplit = null;
-		List<FicheroDirectorio> ficheroDirectorios = new ArrayList<>();
+        return new ModelAndView("redirect:/");
 
-		if (directorio.isDirectory()) {
-			int i = 1;
-			for (File file : directorio.listFiles()) {
-				if (id == i) {
-					toSplit = file;
-				}
-				ficheroDirectorios.add(new FicheroDirectorio(i++, file));
+    }
 
-			}
-			if (toSplit != null) {
-				Fichero fichero = ficheroService.fileToFichero(toSplit);
-				this.fileService.convertFichero2Png(fichero);
-			}
+    @GetMapping("split/{id}")
+    public ModelAndView split(@PathVariable("id") Long id) {
+        File directorio = new File("Z:\\App\\InfiniteSpace\\upload");
+        File toSplit = null;
+        List<FicheroDirectorio> ficheroDirectorios = new ArrayList<>();
 
-		}
-		return new ModelAndView("redirect:/");
-	}
+        if (directorio.isDirectory()) {
+            int i = 1;
+            for (File file : directorio.listFiles()) {
+                if (id == i) {
+                    toSplit = file;
+                }
+                ficheroDirectorios.add(new FicheroDirectorio(i++, file));
 
-	@GetMapping("splitAndStore/{id}")
-	public ModelAndView splitAndStore(@PathVariable("id") Long id) {
-		File directorio = new File("Z:\\App\\InfiniteSpace\\upload");
-		File toSplit = null;
-		List<FicheroDirectorio> ficheroDirectorios = new ArrayList<>();
+            }
+            if (toSplit != null) {
+                Fichero fichero = ficheroService.fileToFichero(toSplit);
+                this.fileService.convertFichero2Png(fichero);
+            }
 
-		if (directorio.isDirectory()) {
-			int i = 1;
-			for (File file : directorio.listFiles()) {
-				if (id == i) {
-					toSplit = file;
-				}
-				ficheroDirectorios.add(new FicheroDirectorio(i++, file));
+        }
+        return new ModelAndView("redirect:/");
+    }
 
-			}
-			if (toSplit != null) {
-				Fichero fichero = ficheroService.fileToFichero(toSplit);
-				List<Referencia> referencias = this.fileService.convertFichero2Png(fichero);
-				this.ficheroService.save(fichero);
-				this.photoService.uploadFiles(referencias);
-				for(Referencia referencia : referencias) {
-					this.mapEntryPhotoService.save(referencia.getEntry());
-				}
+    @GetMapping("splitAndStore/{id}")
+    public ModelAndView splitAndStore(@PathVariable("id") Long id) {
+        File directorio = new File("Z:\\App\\InfiniteSpace\\upload");
+        File toSplit = null;
+        List<FicheroDirectorio> ficheroDirectorios = new ArrayList<>();
 
-			}
+        if (directorio.isDirectory()) {
+            int i = 1;
+            for (File file : directorio.listFiles()) {
+                if (id == i) {
+                    toSplit = file;
+                }
+                ficheroDirectorios.add(new FicheroDirectorio(i++, file));
 
+            }
+            if (toSplit != null) {
+                Fichero fichero = ficheroService.fileToFichero(toSplit);
+                List<Referencia> referencias = this.fileService.convertFichero2Png(fichero);
+                this.ficheroService.save(fichero);
+                this.photoService.uploadFiles(referencias);
+                for (Referencia referencia : referencias) {
+                    this.mapEntryPhotoService.save(referencia.getEntry());
+                }
 
+            }
+        }
+        return new ModelAndView("redirect:/");
+    }
 
-		}
-		return new ModelAndView("redirect:/");
-	}
+    @GetMapping("compare")
+    public ModelAndView compareImages() {
+        this.ficheroService.compareFile("","");
+        return new ModelAndView("redirect:/");
+    }
 
 }

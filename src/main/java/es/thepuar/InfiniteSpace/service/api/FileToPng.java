@@ -12,7 +12,13 @@ public interface FileToPng {
 	
 	public void convertFile2Png();
 	
-	public void createFromReferencia(List<Referencia> referencias);
-	
+	public void createOriginalFromReferencia(List<Referencia> referencias);
+
+	public void createFromImages( List<Referencia> referencias);
+
 	public List<Referencia> convertFichero2Png(Fichero fichero);
+
+	public boolean compareFiles(String a, String b);
+
+
 }

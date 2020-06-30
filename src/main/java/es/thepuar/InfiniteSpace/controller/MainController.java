@@ -8,8 +8,10 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import es.thepuar.InfiniteSpace.google.client.PhotoClientJava;
+import es.thepuar.InfiniteSpace.manager.ResourceManager;
 import es.thepuar.InfiniteSpace.model.CambioRutaForm;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -54,6 +56,9 @@ public class MainController {
 	FileToPng converter;
 
 	@Autowired
+	ResourceManager resourceManager;
+
+	@Autowired
 	PhotoRestClient photoRestClient;
 
 	@Autowired
@@ -68,7 +73,7 @@ public class MainController {
 		ficheros = ficheroService.findAll();
 		mav.addObject("ficheros", ficheros);
 
-		File directorio = new File("Z:\\App\\InfiniteSpace\\upload");
+		File directorio = new File(resourceManager.getProperty("ruta_upload"));
 		
 		List<FicheroDirectorio> ficheroDirectorios = new ArrayList<>();
 
@@ -81,6 +86,8 @@ public class MainController {
 			mav.addObject("files",ficheroDirectorios);
 			mav.addObject("form",new CambioRutaForm());
 		}
+
+
 
 		return mav;
 

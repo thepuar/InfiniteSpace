@@ -82,6 +82,7 @@ public class FicheroServiceImpl implements FicheroService{
 	public void downloadFile(Fichero fichero) {
 		List<MapEntryPhoto> partes = this.mapEntryPhotoService.findByFichero(fichero);
 		List<Referencia> referencias = this.photoClient.downloadFichero(partes);
+		this.converter.createOriginalFromReferencia(referencias);
 		
 		
 	}
@@ -112,6 +113,11 @@ public class FicheroServiceImpl implements FicheroService{
 		fichero.setFile(file);
 		this.completeFichero(fichero);
 		return fichero;
+	}
+
+	@Override
+	public void compareFile(String fileA, String fileB) {
+		this.converter.compareFiles("Z:\\App\\InfiniteSpace\\upload\\trincherasruthmalena.PNG","Z:\\App\\InfiniteSpace\\incoming\\trincherasruthmalena.PNG");
 	}
 
 	@Override
