@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,28 +45,34 @@ class InfiniteSpaceApplicationTests {
 
 	@Test
 	void compruebaBytes() throws IOException {
-		int limit = 2*1024*1024;
+		final String defaultpath= "Z:\\App\\InfiniteSpace\\upload\\";
 		//fileToPng.test();
 		//assertThat(fileToPng).isNotNull();
-		System.out.println("Esto es un text");
-		File f = new File("Z:\\App\\InfiniteSpace\\upload\\trincherasruthmalena.PNG");
-		FileInputStream in = new FileInputStream(f);
-		byte[] byteOriginal = IOUtils.toByteArray(in);
-		Fichero fichero = ficheroService.fileToFichero(f);
-		List<Referencia> referencias = fileToPng.convertFichero2Png(fichero);
-		int contador = 0;
+		List<String> pathFiles = new ArrayList();
+		pathFiles.add(defaultpath+"IMG_5547.MOV");
+		pathFiles.add(defaultpath+"Matrix - The Animatrix Los 9 Capitulos En Español.avi");
 
-		this.fileToPng.createOriginalFromReferencia(referencias);
 
-		File freconstruido = new File(resourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtenxion());
-		FileInputStream inReconstruido = new FileInputStream(freconstruido);
-		byte[] byteReconstruido = IOUtils.toByteArray(inReconstruido);
+		for(String path  : pathFiles) {
+			File f = new File(path);
+			FileInputStream in = new FileInputStream(f);
+			byte[] byteOriginal = IOUtils.toByteArray(in);
+			Fichero fichero = ficheroService.fileToFichero(f);
+			List<Referencia> referencias = fileToPng.convertFichero2Png(fichero);
+			int contador = 0;
 
-		assertThat(byteOriginal.length).isEqualTo( byteReconstruido.length);
-		for(int i = 0; i<byteOriginal.length;i++){
-			if(byteOriginal[i] != byteReconstruido[i])
-				System.out.println("Error encontrado en la posicion "+i );
-			assertThat(byteOriginal[i]).isEqualTo(byteReconstruido[i]);
+			this.fileToPng.createOriginalFromReferencia(referencias);
+
+			File freconstruido = new File(resourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtenxion());
+			FileInputStream inReconstruido = new FileInputStream(freconstruido);
+			byte[] byteReconstruido = IOUtils.toByteArray(inReconstruido);
+
+			assertThat(byteOriginal.length).isEqualTo(byteReconstruido.length);
+			for (int i = 0; i < byteOriginal.length; i++) {
+				if (byteOriginal[i] != byteReconstruido[i])
+					System.out.println("Error encontrado en la posicion " + i);
+				assertThat(byteOriginal[i]).isEqualTo(byteReconstruido[i]);
+			}
 		}
 
 	}

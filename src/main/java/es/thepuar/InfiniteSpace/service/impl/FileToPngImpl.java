@@ -24,7 +24,7 @@ public class FileToPngImpl implements FileToPng {
 
     private final int sizeX = 1920;
     private final int sizeY = 1080;
-    private final int limit = 1024 * 1024 * 2;// Limite de bytes
+    private final int limit = (1024 * 1024 * 2) - 1;// Limite de bytes (Numero de posiciones del array)
 
     @Autowired
     ResourceManager resourceManager;
@@ -64,10 +64,10 @@ public class FileToPngImpl implements FileToPng {
         boolean primer_null = false;
 
         int tamanyo = sizeX * sizeY * 3;
-        int mylimit = limit < (bytes.length - position) ? limit : (bytes.length - position) - 1;
+        int mylimit = limit < (bytes.length - position) ? limit : (bytes.length - position) ;
         byte[] result = new byte[tamanyo];
         int contador = 0;
-        for (int i = position; i < (limit + position) - 1; i++) {
+        for (int i = position; i < (limit + position) ; i++) {
             if (i == tamanyo - 1)
                 System.out.println("Para");
             if (contador < mylimit) {
@@ -85,6 +85,12 @@ public class FileToPngImpl implements FileToPng {
         return result;
     }
 
+    /**
+     * Crea una imagen a partir de arrays de bytes
+     * @param bytes
+     * @param parte
+     * @return
+     */
     private Referencia createPng(byte[] bytes, int parte) {
         int position = 0;
 
@@ -124,6 +130,10 @@ public class FileToPngImpl implements FileToPng {
 
     }
 
+    /**
+     * Crea un fichero a partir de imagenes
+     * @param referencias
+     */
     public void createFromImages(List<Referencia> referencias) {
         Fichero fichero = referencias.get(0).getEntry().getFichero();
         byte[] data = new byte[(int) fichero.getBytes()];
@@ -148,8 +158,6 @@ public class FileToPngImpl implements FileToPng {
                     }
                 }
                 byte[] result = purgeEmptyData(toPurge);
-
-
             }
 
             File ffinal = new File(resourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtenxion());
@@ -162,6 +170,11 @@ public class FileToPngImpl implements FileToPng {
         }
     }
 
+
+    /**
+     * Metodo para TEST
+     * @param f
+     */
     private void createFromImage(File f) {
         byte[] data = new byte[sizeX * sizeY * 3];
 
@@ -231,7 +244,7 @@ public class FileToPngImpl implements FileToPng {
                 for (int i = 0; i < result.length; i++) {
                     data[positionCompleted + i] = result[i];
                 }
-                positionCompleted += result.length+1;
+                positionCompleted += result.length;
 
             }
             fos.write(data);
@@ -242,6 +255,11 @@ public class FileToPngImpl implements FileToPng {
         }
     }
 
+    /**
+     * Recibe todos los bytes de un png y se encarga de recuperar solo los validos.
+     * @param bytes Recibe los bytes de un png
+     * @return
+     */
     private byte[] purgeEmptyData(byte[] bytes) {
         byte[] result = null;
         boolean encontradoFin = false;
@@ -265,13 +283,20 @@ public class FileToPngImpl implements FileToPng {
         return result;
     }
 
+    /**
+     * Meotdo para TEST
+     */
     @Override
     public void convertFile2Png() {
         createFromImage(new File("H:\\Documentos\\InfiniteSpace\\zfinal2.png"));
 
     }
 
-
+    /**
+     * Crea un fichero en PNGs
+     * @param fichero
+     * @return
+     */
     @Override
     public List<Referencia> convertFichero2Png(Fichero fichero) {
         List<Referencia> response = new ArrayList<>();
