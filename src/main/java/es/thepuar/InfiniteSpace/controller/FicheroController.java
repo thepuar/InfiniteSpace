@@ -116,7 +116,7 @@ public class FicheroController {
     public ModelAndView splitAndStore(@PathVariable("id") Long id) {
         File directorio = new File("Z:\\App\\InfiniteSpace\\upload");
         File toSplit = null;
-        List<FicheroDirectorio> ficheroDirectorios = new ArrayList<>();
+       // List<FicheroDirectorio> ficheroDirectorios = new ArrayList<>();
 
         if (directorio.isDirectory()) {
             int i = 1;
@@ -124,7 +124,8 @@ public class FicheroController {
                 if (id == i) {
                     toSplit = file;
                 }
-                ficheroDirectorios.add(new FicheroDirectorio(i++, file));
+                i++;
+               // ficheroDirectorios.add(new FicheroDirectorio(i++, file));
 
             }
             if (toSplit != null) {

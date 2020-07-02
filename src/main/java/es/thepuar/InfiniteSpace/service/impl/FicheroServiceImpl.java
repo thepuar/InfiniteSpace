@@ -117,7 +117,7 @@ public class FicheroServiceImpl implements FicheroService{
 
 	@Override
 	public void compareFile(String fileA, String fileB) {
-		this.converter.compareFiles("Z:\\App\\InfiniteSpace\\upload\\trincherasruthmalena.PNG","Z:\\App\\InfiniteSpace\\incoming\\trincherasruthmalena.PNG");
+		this.converter.compareFiles("Z:\\App\\InfiniteSpace\\upload\\trincherasruthmalena.PNG","Z:\\App\\InfiniteSpace\\final\\trincherasruthmalena.PNG");
 	}
 
 	@Override

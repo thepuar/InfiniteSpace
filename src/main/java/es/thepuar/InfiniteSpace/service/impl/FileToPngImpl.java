@@ -58,10 +58,10 @@ public class FileToPngImpl implements FileToPng {
     }
 
     /*
-     * Este metodo crea los arrays de datos para las imagenes
+     * Este metodo crea los arrays de datos para las imagenes, Recibe los bytes que tiene que poner y el resto lo completa a 0
      * */
     private byte[] completeBytes(byte[] bytes, int position) {
-
+        boolean primer_null = false;
 
         int tamanyo = sizeX * sizeY * 3;
         int mylimit = limit < (bytes.length - position) ? limit : (bytes.length - position) - 1;
@@ -73,6 +73,11 @@ public class FileToPngImpl implements FileToPng {
             if (contador < mylimit) {
                 result[contador] = bytes[i];
             } else {
+                if(!primer_null){
+                    primer_null = true;
+                    System.out.println("Contador de bytes para el primer null posicion-> "+contador);
+                }
+
                 result[contador] = 0;
             }
             contador++;
@@ -224,9 +229,9 @@ public class FileToPngImpl implements FileToPng {
                 byte[] result = purgeEmptyData(toPurge);
 
                 for (int i = 0; i < result.length; i++) {
-                    data[positionCompleted + i] = toPurge[i];
+                    data[positionCompleted + i] = result[i];
                 }
-                positionCompleted += result.length;
+                positionCompleted += result.length+1;
 
             }
             fos.write(data);
@@ -266,6 +271,7 @@ public class FileToPngImpl implements FileToPng {
 
     }
 
+
     @Override
     public List<Referencia> convertFichero2Png(Fichero fichero) {
         List<Referencia> response = new ArrayList<>();
@@ -276,12 +282,12 @@ public class FileToPngImpl implements FileToPng {
             FileInputStream in = new FileInputStream(f);
             byte[] bytes = IOUtils.toByteArray(in);
             in.close();
-            System.out.println("Numero de bytes " + bytes.length);
+            System.out.println("Numero de bytes totales de "+fichero.getNombre()+" "+ bytes.length);
             int parte = 1;
             for (int i = 0; i < bytes.length; i += limit) {
-
+                //Bytes para crear la imagen
                 byte[] result = completeBytes(bytes, i);
-                System.out.println("Bytes leidos de zhola.pdf " + result.length);
+
                 Referencia referencia = createPng(result, parte++);
                 referencia.getEntry().setFichero(fichero);
                 response.add(referencia);

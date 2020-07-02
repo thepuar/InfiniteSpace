@@ -19,6 +19,7 @@ public class MapEntryPhoto {
 	private Integer parte;
 	private String mediaId;
 	private String url;
+	private Long bytes;
 	
 	@ManyToOne
 	Fichero fichero;
