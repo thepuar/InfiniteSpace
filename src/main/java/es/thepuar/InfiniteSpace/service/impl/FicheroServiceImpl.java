@@ -121,6 +121,17 @@ public class FicheroServiceImpl implements FicheroService{
 	}
 
 	@Override
+	public boolean esPosibleDescargar(Fichero fichero) {
+		boolean resultado = true;
+		List<MapEntryPhoto> partes = this.mapEntryPhotoService.findByFichero(fichero);
+		for(MapEntryPhoto entry: partes){
+			if(!mapEntryPhotoService.esPosibleDescargar(entry))
+				return false;
+		}
+		return resultado;
+	}
+
+	@Override
 	public Fichero findById(Long id) {
 		return this.dao.findById(id).get();
 	}

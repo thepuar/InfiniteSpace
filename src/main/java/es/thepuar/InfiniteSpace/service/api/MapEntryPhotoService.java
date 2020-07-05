@@ -15,4 +15,6 @@ public interface MapEntryPhotoService {
 	
 	public List<MapEntryPhoto> findByFichero(Fichero fichero);
 
+	public boolean esPosibleDescargar(MapEntryPhoto entry);
+
 }

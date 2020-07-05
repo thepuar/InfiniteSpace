@@ -25,4 +25,6 @@ public interface FicheroService {
 
 	public void compareFile(String fileA, String fileB);
 
+	public boolean esPosibleDescargar(Fichero fichero);
+
 }

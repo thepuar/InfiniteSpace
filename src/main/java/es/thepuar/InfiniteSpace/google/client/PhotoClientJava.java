@@ -18,6 +18,7 @@ import es.thepuar.InfiniteSpace.manager.ResourceManager;
 import es.thepuar.InfiniteSpace.model.MapEntryPhoto;
 import es.thepuar.InfiniteSpace.model.Referencia;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,175 +39,197 @@ import java.util.List;
 @Service
 public class PhotoClientJava {
 
-	private static final List<String> REQUIRED_SCOPES = ImmutableList.of(
-			"https://www.googleapis.com/auth/photoslibrary.readonly",
-			"https://www.googleapis.com/auth/photoslibrary.appendonly");
+    private static final List<String> REQUIRED_SCOPES = ImmutableList.of(
+            "https://www.googleapis.com/auth/photoslibrary.readonly",
+            "https://www.googleapis.com/auth/photoslibrary.appendonly");
 
-	@Autowired
-	ResourceManager resourceManager;
 
-	private PhotosLibraryClient client = null;
 
-	private String myId;
+    private PhotosLibraryClient client = null;
 
-	@PostConstruct
-	public void initialize() {
-		try {
-			client = PhotosLibraryClientFactory.createClient(resourceManager.getProperty("ruta_credential")+ "\\"+resourceManager.getProperty("fichero_credenciales"),
-					REQUIRED_SCOPES);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (GeneralSecurityException e) {
-			e.printStackTrace();
-		}
-	}
+    private String myId;
 
-	public PhotosLibraryClient getClient() {
-		return this.client;
-	}
+    @PostConstruct
+    public void initialize() {
+        try {
+            client = PhotosLibraryClientFactory.createClient(ResourceManager.getProperty("ruta_credential") + "\\" + ResourceManager.getProperty("fichero_credenciales"),
+                    REQUIRED_SCOPES);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public void uploadFiles(List<Referencia> referencias){
-		UploadMediaItemRequest uploadRequest;
-		RandomAccessFile file = null;
+    public PhotosLibraryClient getClient() {
+        return this.client;
+    }
 
-		for(Referencia referencia : referencias){
-			try {
-				file = new RandomAccessFile(referencia.getRuta(), "r");
-				uploadRequest = UploadMediaItemRequest.newBuilder().setMimeType("image/png").setDataFile(file).build();
-				UploadMediaItemResponse uploadResponse = this.client.uploadMediaItem(uploadRequest);
-				try {
-					file.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				if (uploadResponse.getError().isPresent()) {
-					UploadMediaItemResponse.Error error = uploadResponse.getError().get();
-					error.getCause().printStackTrace();
-				}else {
-					String uploadToken = uploadResponse.getUploadToken().get();
-					System.out.println("Token " + uploadToken);
+    public void uploadFiles(List<Referencia> referencias) {
+        UploadMediaItemRequest uploadRequest;
+        RandomAccessFile file = null;
+        int parte = 1;
+        for (Referencia referencia : referencias) {
+            try {
+                file = new RandomAccessFile(referencia.getRuta(), "r");
+                uploadRequest = UploadMediaItemRequest.newBuilder().setMimeType("image/png").setDataFile(file).build();
+                UploadMediaItemResponse uploadResponse = this.client.uploadMediaItem(uploadRequest);
+                try {
+                    file.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (uploadResponse.getError().isPresent()) {
+                    UploadMediaItemResponse.Error error = uploadResponse.getError().get();
+                    error.getCause().printStackTrace();
+                } else {
+                    String uploadToken = uploadResponse.getUploadToken().get();
 
-					try {
-						NewMediaItem newMediaItem = NewMediaItemFactory.createNewMediaItem(uploadToken, "zhola",
-								"No soy un pdf");
-						List<NewMediaItem> newItems = Arrays.asList(newMediaItem);
 
-						BatchCreateMediaItemsResponse response = this.client.batchCreateMediaItems(newItems);
-						for (NewMediaItemResult itemsResponse : response.getNewMediaItemResultsList()) {
-							Status status = itemsResponse.getStatus();
-							if (status.getCode() == Code.OK_VALUE) {
-								MediaItem createdItem = itemsResponse.getMediaItem();
-								System.out.println("Subido Id " + createdItem.getId());
-								this.myId = createdItem.getId();
-								referencia.getEntry().setMediaId(myId);
-							} else {
-								// The item could not be created. Check the status and try again
-							}
-						}
-					} catch (ApiException e) {
-						e.printStackTrace();
-					}
+                    try {
+                        NewMediaItem newMediaItem = NewMediaItemFactory.createNewMediaItem(uploadToken, "zhola",
+                                "No soy un pdf");
+                        List<NewMediaItem> newItems = Arrays.asList(newMediaItem);
 
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+                        BatchCreateMediaItemsResponse response = this.client.batchCreateMediaItems(newItems);
+                        for (NewMediaItemResult itemsResponse : response.getNewMediaItemResultsList()) {
+                            Status status = itemsResponse.getStatus();
+                            if (status.getCode() == Code.OK_VALUE) {
+                                MediaItem createdItem = itemsResponse.getMediaItem();
+                                System.out.println("Subido parte "+parte++ +"/"+referencia.getEntry().getFichero().getPartes());
+                                this.myId = createdItem.getId();
+                                String baseUrl = createdItem.getBaseUrl();
+                                if(!StringUtils.isBlank(baseUrl))
+                                    referencia.getEntry().setUrl(createdItem.getBaseUrl());
+                                referencia.getEntry().setMediaId(myId);
+                            } else {
+                                // The item could not be created. Check the status and try again
+                            }
+                        }
+                    } catch (ApiException e) {
+                        e.printStackTrace();
+                    }
 
-	public void uploadFile() {
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-		UploadMediaItemRequest uploadRequest;
+    public void uploadFile() {
 
-		RandomAccessFile file = null;
-		try {
-			file = new RandomAccessFile("H:\\Documentos\\InfiniteSpace\\zhola.png", "r");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		uploadRequest = UploadMediaItemRequest.newBuilder().setMimeType("image/png").setDataFile(file).build();
+        UploadMediaItemRequest uploadRequest;
 
-		UploadMediaItemResponse uploadResponse = this.client.uploadMediaItem(uploadRequest);
-		try {
-			file.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		if (uploadResponse.getError().isPresent()) {
-			// If the upload results in an error, handle it
-			UploadMediaItemResponse.Error error = uploadResponse.getError().get();
-			error.getCause().printStackTrace();
-		} else {
-			// If the upload is successful, get the uploadToken
-			String uploadToken = uploadResponse.getUploadToken().get();
-			System.out.println("Token " + uploadToken);
-			// Use this upload token to create a media item
+        RandomAccessFile file = null;
+        try {
+            file = new RandomAccessFile("H:\\Documentos\\InfiniteSpace\\zhola.png", "r");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        uploadRequest = UploadMediaItemRequest.newBuilder().setMimeType("image/png").setDataFile(file).build();
 
-			try {
-				// Create a NewMediaItem with the following components:
-				// - uploadToken obtained from the previous upload request
-				// - filename that will be shown to the user in Google Photos
-				// - description that will be shown to the user in Google Photos
-				NewMediaItem newMediaItem = NewMediaItemFactory.createNewMediaItem(uploadToken, "zhola",
-						"No soy un pdf");
-				List<NewMediaItem> newItems = Arrays.asList(newMediaItem);
+        UploadMediaItemResponse uploadResponse = this.client.uploadMediaItem(uploadRequest);
+        try {
+            file.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (uploadResponse.getError().isPresent()) {
+            // If the upload results in an error, handle it
+            UploadMediaItemResponse.Error error = uploadResponse.getError().get();
+            error.getCause().printStackTrace();
+        } else {
+            // If the upload is successful, get the uploadToken
+            String uploadToken = uploadResponse.getUploadToken().get();
+            System.out.println("Token " + uploadToken);
+            // Use this upload token to create a media item
 
-				BatchCreateMediaItemsResponse response = this.client.batchCreateMediaItems(newItems);
-				for (NewMediaItemResult itemsResponse : response.getNewMediaItemResultsList()) {
-					Status status = itemsResponse.getStatus();
-					if (status.getCode() == Code.OK_VALUE) {
-						// The item is successfully created in the user's library
-						MediaItem createdItem = itemsResponse.getMediaItem();
-						System.out.println("Subido Id " + createdItem.getId());
-						this.myId = createdItem.getId();
-					} else {
-						// The item could not be created. Check the status and try again
-					}
-				}
-			} catch (ApiException e) {
-				// Handle error
-				e.printStackTrace();
-			}
+            try {
+                // Create a NewMediaItem with the following components:
+                // - uploadToken obtained from the previous upload request
+                // - filename that will be shown to the user in Google Photos
+                // - description that will be shown to the user in Google Photos
+                NewMediaItem newMediaItem = NewMediaItemFactory.createNewMediaItem(uploadToken, "zhola",
+                        "No soy un pdf");
+                List<NewMediaItem> newItems = Arrays.asList(newMediaItem);
 
-		}
+                BatchCreateMediaItemsResponse response = this.client.batchCreateMediaItems(newItems);
+                for (NewMediaItemResult itemsResponse : response.getNewMediaItemResultsList()) {
+                    Status status = itemsResponse.getStatus();
+                    if (status.getCode() == Code.OK_VALUE) {
+                        // The item is successfully created in the user's library
+                        MediaItem createdItem = itemsResponse.getMediaItem();
+                        System.out.println("Subido Id " + createdItem.getId());
+                        this.myId = createdItem.getId();
+                    } else {
+                        // The item could not be created. Check the status and try again
+                    }
+                }
+            } catch (ApiException e) {
+                // Handle error
+                e.printStackTrace();
+            }
 
-	}
+        }
 
-	public List<Referencia> downloadFichero(List<MapEntryPhoto> partes) {
+    }
 
-		List<Referencia> result = new ArrayList<>();
-		for (MapEntryPhoto entry : partes) {
-			MediaItem item = this.client.getMediaItem(entry.getMediaId());
-			String url = item.getBaseUrl() + "=w1920-h1080";
-			String ruta = resourceManager.getProperty("ruta_descarga")+"\\" + Calendar.getInstance().getTimeInMillis() + ".png";
-			result.add(new Referencia(ruta, entry));
-			this.downloadFromUrl(url, ruta);
-		}
-		return result;
-	}
 
-	public void downloadImage() {
-		MediaItem item = this.client.getMediaItem(this.myId);
-		String url = item.getBaseUrl() + "=w1920-h1080";
-		System.out.println("URL: " + url);
 
-		this.downloadFromUrl(url, resourceManager.getProperty("ruta_descarga")+"\\" + Calendar.getInstance().getTimeInMillis() + ".png");
-	}
+    public List<Referencia> downloadFichero(List<MapEntryPhoto> partes) {
 
-	public void downloadFromUrl(String url, String file) {
+        List<Referencia> result = new ArrayList<>();
+        for (MapEntryPhoto entry : partes) {
+            MediaItem item = this.client.getMediaItem(entry.getMediaId());
+            String url = item.getBaseUrl() + "=w1920-h1080";
+            String ruta = ResourceManager.getProperty("ruta_descarga") + "\\" + Calendar.getInstance().getTimeInMillis() + ".png";
+            result.add(new Referencia(ruta, entry));
+            this.downloadFromUrl(url, ruta);
+        }
+        return result;
+    }
 
-		try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
+    public String getBaseUrl(MapEntryPhoto parte){
+        MediaItem item = this.client.getMediaItem(parte.getMediaId());
+        String url = item.getBaseUrl();
+        return url;
+    }
 
-				FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-			byte dataBuffer[] = new byte[1024];
-			int bytesRead;
-			while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-				fileOutputStream.write(dataBuffer, 0, bytesRead);
-			}
-		} catch (IOException e) {
-			// handle exception
-			e.printStackTrace();
-		}
+    public Referencia downloadMapEntryPhoto(MapEntryPhoto parte) {
+        Referencia result = null;
+        MediaItem item = this.client.getMediaItem(parte.getMediaId());
+        String url = item.getBaseUrl() + "=w1920-h1080";
+        String ruta = ResourceManager.getProperty("ruta_descarga") + "\\" + Calendar.getInstance().getTimeInMillis() + ".png";
+        result = new Referencia(ruta, parte);
+        this.downloadFromUrl(url, ruta);
+        return result;
+    }
 
-	}
+    public void downloadImage() {
+        MediaItem item = this.client.getMediaItem(this.myId);
+        String url = item.getBaseUrl() + "=w1920-h1080";
+        System.out.println("URL: " + url);
+
+        this.downloadFromUrl(url, ResourceManager.getProperty("ruta_descarga") + "\\" + Calendar.getInstance().getTimeInMillis() + ".png");
+    }
+
+    public void downloadFromUrl(String url, String file) {
+
+        try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
+
+             FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            byte dataBuffer[] = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+                fileOutputStream.write(dataBuffer, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            // handle exception
+            e.printStackTrace();
+        }
+
+    }
+
+
 }

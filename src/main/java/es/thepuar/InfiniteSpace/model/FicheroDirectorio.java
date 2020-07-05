@@ -9,6 +9,7 @@ public class FicheroDirectorio {
 
 	private int Id;
 	private File file;
+
 	
 	
 	

@@ -1,10 +1,13 @@
 package es.thepuar.InfiniteSpace;
 
+import es.thepuar.InfiniteSpace.manager.DownloadManager;
 import es.thepuar.InfiniteSpace.manager.ResourceManager;
 import es.thepuar.InfiniteSpace.model.Fichero;
+import es.thepuar.InfiniteSpace.model.MapEntryPhoto;
 import es.thepuar.InfiniteSpace.model.Referencia;
 import es.thepuar.InfiniteSpace.service.api.FicheroService;
 import es.thepuar.InfiniteSpace.service.api.FileToPng;
+import es.thepuar.InfiniteSpace.service.api.MapEntryPhotoService;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +36,11 @@ class InfiniteSpaceApplicationTests {
 	FicheroService ficheroService;
 
 	@Autowired
-	ResourceManager resourceManager;
+	MapEntryPhotoService mapEntryPhotoService;
+
+
+	@Autowired
+	DownloadManager downloadManager;
 
 
 
@@ -43,7 +50,7 @@ class InfiniteSpaceApplicationTests {
 		assertThat(fileToPng).isNotNull();
 	}
 
-	@Test
+	//@Test
 	void compruebaBytes() throws IOException {
 		final String defaultpath= "Z:\\App\\InfiniteSpace\\upload\\";
 		//fileToPng.test();
@@ -63,7 +70,7 @@ class InfiniteSpaceApplicationTests {
 
 			this.fileToPng.createOriginalFromReferencia(referencias);
 
-			File freconstruido = new File(resourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtenxion());
+			File freconstruido = new File(ResourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtenxion());
 			FileInputStream inReconstruido = new FileInputStream(freconstruido);
 			byte[] byteReconstruido = IOUtils.toByteArray(inReconstruido);
 
@@ -75,6 +82,13 @@ class InfiniteSpaceApplicationTests {
 			}
 		}
 
+	}
+
+	@Test
+	public void compruebaDescargaParalela(){
+		Fichero fichero = this.ficheroService.findById(65L);
+		List<MapEntryPhoto> partes = this.mapEntryPhotoService.findByFichero(fichero);
+		downloadManager.downloadFichero(fichero);
 	}
 
 }

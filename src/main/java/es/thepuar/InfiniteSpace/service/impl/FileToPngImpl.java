@@ -26,8 +26,7 @@ public class FileToPngImpl implements FileToPng {
     private final int sizeY = 1080;
     private final int limit = (1024 * 1024 * 2) - 1;// Limite de bytes (Numero de posiciones del array)
 
-    @Autowired
-    ResourceManager resourceManager;
+
 
     /*
      * (non-Javadoc)
@@ -113,7 +112,7 @@ public class FileToPngImpl implements FileToPng {
             }
         }
 
-        String url = resourceManager.getProperty("ruta_temp") + "\\temp" + Calendar.getInstance().getTimeInMillis() + ".png";
+        String url = ResourceManager.getProperty("ruta_temp") + "\\temp" + Calendar.getInstance().getTimeInMillis() + ".png";
         File outputfile = new File(url);
         MapEntryPhoto entry = new MapEntryPhoto();
         entry.setParte(parte);
@@ -160,7 +159,7 @@ public class FileToPngImpl implements FileToPng {
                 byte[] result = purgeEmptyData(toPurge);
             }
 
-            File ffinal = new File(resourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtenxion());
+            File ffinal = new File(ResourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtenxion());
             FileOutputStream fos = new FileOutputStream(ffinal);
             fos.write(data);
             fos.flush();
@@ -217,7 +216,7 @@ public class FileToPngImpl implements FileToPng {
 
         int positionCompleted = 0;
         try {
-            File ffinal = new File(resourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtenxion());
+            File ffinal = new File(ResourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtenxion());
             FileOutputStream fos = new FileOutputStream(ffinal);
 
             for (Referencia referencia : referencias) {

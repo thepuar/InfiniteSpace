@@ -1,9 +1,6 @@
 package es.thepuar.InfiniteSpace.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import lombok.Data;
 
@@ -18,10 +15,14 @@ public class MapEntryPhoto {
 	
 	private Integer parte;
 	private String mediaId;
+	@Column(length=1000)
 	private String url;
 	private Long bytes;
 	
 	@ManyToOne
 	Fichero fichero;
-	
+
+	public String getUrl1920(){
+		return this.getUrl()+"=w1920-h1080";
+	}
 }

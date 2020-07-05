@@ -55,8 +55,7 @@ public class MainController {
 	@Autowired
 	FileToPng converter;
 
-	@Autowired
-	ResourceManager resourceManager;
+
 
 	@Autowired
 	PhotoRestClient photoRestClient;
@@ -73,7 +72,7 @@ public class MainController {
 		ficheros = ficheroService.findAll();
 		mav.addObject("ficheros", ficheros);
 
-		File directorio = new File(resourceManager.getProperty("ruta_upload"));
+		File directorio = new File(ResourceManager.getProperty("ruta_upload"));
 		
 		List<FicheroDirectorio> ficheroDirectorios = new ArrayList<>();
 

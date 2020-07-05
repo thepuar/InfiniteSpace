@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.thepuar.InfiniteSpace.google.client.PhotoClientJava;
+import es.thepuar.InfiniteSpace.manager.DownloadManager;
 import es.thepuar.InfiniteSpace.model.MapEntryPhoto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,9 @@ public class FicheroController {
 
     @Autowired
     FileToPng fileService;
+
+    @Autowired
+    DownloadManager downloadManager;
 
     @GetMapping("{id}")
     public ModelAndView detail(@PathVariable("id") Long id) {
@@ -146,6 +150,15 @@ public class FicheroController {
     public ModelAndView compareImages() {
         this.ficheroService.compareFile("","");
         return new ModelAndView("redirect:/");
+    }
+
+    @GetMapping("downloadThread/{id}")
+    public ModelAndView descargaHilos(@PathVariable("id") Long id){
+        Fichero fichero = ficheroService.findById(id);
+        downloadManager.downloadFichero(fichero);
+
+        return new ModelAndView("redirect:/");
+
     }
 
 }

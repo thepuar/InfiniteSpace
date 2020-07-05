@@ -5,17 +5,12 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.ResourceBundle;
 
-@Service
+
 public class ResourceManager {
 
-    ResourceBundle bundle;
+    static ResourceBundle bundle = ResourceBundle.getBundle("config");
 
-    @PostConstruct
-    public void init(){
-        bundle = ResourceBundle.getBundle("config");
-    }
-
-    public String getProperty(String property){
-        return this.bundle.getString(property);
+    public static String getProperty(String property){
+        return bundle.getString(property);
     }
 }
