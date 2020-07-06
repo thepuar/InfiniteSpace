@@ -1,0 +1,69 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+     >
+<head>
+    <meta charset="UTF-8"/>
+    <title>Vacio</title>
+
+    <link th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css}"
+          rel="stylesheet">
+    <link th:href="@{/webjars/font-awesome/5.13.0/css/fontawesome.min.css}"
+          rel="stylesheet">
+    <!-- <link th:href="@{css/main.css}" rel="stylesheet"> -->
+
+</head>
+<body>
+<div th:insert="fragments/banners.html :: navBarUser"></div>
+</br>
+<div class="container">
+
+
+    <form action="#" th:action="@{/path}" method="post" th:object="${form}" >
+        <input type="text" th:field="*{ruta}"/>
+        <input type="submit" value="Cambiar de ruta"/>
+    </form>
+
+    <div th:insert="fragments/fragment_tables.html :: tabla_directorio"></div>
+    <div th:insert="fragments/fragment_tables.html :: tabla_ficheros"></div>
+
+
+
+
+    <h1>Formularios</h1>
+
+    <form action="#" th:action="@{/action}" method="post">
+
+        <p>
+            <input type="submit" value="Convertir fichero en png"/>
+        </p>
+    </form>
+
+
+    <form action="#" th:action="@{/convert}" method="post">
+
+        <p>
+            <input type="submit" value="Convert image to file"/>
+        </p>
+    </form>
+
+    <form action="#" th:action="@{/upload}" method="post">
+
+        <p>
+            <input type="submit" value="Upload File"/>
+        </p>
+    </form>
+
+    <form action="#" th:action="@{/download}" method="post">
+
+        <p>
+            <input type="submit" value="Download File"/>
+        </p>
+    </form>
+
+</div>
+<script th:src="@{/webjars/jquery/1.9.1/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.0.0-2/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/font-awesome/5.13.0/js/all.min.js}"></script>
+</body>
+</html>
