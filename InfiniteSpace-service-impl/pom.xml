@@ -9,18 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>InifinitySpace-mvc</artifactId>
+    <artifactId>InfiniteSpace-service-impl</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>es.thepuar</groupId>
             <artifactId>InfiniteSpace-model</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>es.thepuar</groupId>
-            <artifactId>InfiniteSpace-repository</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
@@ -32,25 +26,15 @@
 
         <dependency>
             <groupId>es.thepuar</groupId>
-            <artifactId>InfiniteSpace-service-impl</artifactId>
+            <artifactId>InfiniteSpace-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>es.thepuar</groupId>
+            <artifactId>InfiniteSpace-repository</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <!--<configuration>
-                    <jvmArguments>
-                        -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005
-                    </jvmArguments>
-                </configuration>-->
-            </plugin>
-        </plugins>
-    </build>
-
 
 </project>

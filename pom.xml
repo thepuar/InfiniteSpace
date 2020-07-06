@@ -8,7 +8,10 @@
 		<module>InfiniteSpace-model</module>
 		<module>InfiniteSpace-repository</module>
 		<module>InifinitySpace-mvc</module>
-	</modules>
+		<module>InfiniteSpace-service-api</module>
+		<module>InfiniteSpace-service-impl</module>
+        <module>InfiniteSpace-common</module>
+    </modules>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
