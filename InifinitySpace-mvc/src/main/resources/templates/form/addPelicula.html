@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="@{~/layout/simple-layout}">
 <head>
@@ -9,6 +10,21 @@
 <body>
 <div  layout:fragment="content">
     Formulario para crear peliculas
+
+    <form th:object="${pelicula}" method="POST"  th:action="@{/pelicula/add}">
+        <div class="form-group">
+            <label for="inputNombre">Nombre de la pelicula</label>
+            <input type="text" class="form-control" id="inputNombre" aria-describedby="emailHelp" th:field="*{nombre}">
+            <small id="emailHelp" class="form-text text-muted">Introduce el nombre de la pelicula</small>
+        </div>
+
+        <select class="custom-select" th:field="*{fichero}">
+            <option th:value="${null}" selected>Elige un fichero que no esta asociado</option>
+            <option th:each="fichero : ${ficheros}" th:value="${fichero.id}" th:utext="${fichero.nombre}"></option>
+        </select>
+        <br/>
+        <button type="submit" class="btn btn-primary">Crear</button>
+    </form>
 </div>
 </body>
 </html>

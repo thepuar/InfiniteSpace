@@ -155,6 +155,7 @@ public class FileToPngImpl implements FileToPng {
                         toPurge[position++] = (byte) b;
                     }
                 }
+                System.out.println("Purgando parte"+referencia.getEntry().getParte()+" / "+referencias.size());
                 byte[] result = purgeEmptyData(toPurge);
             }
 
@@ -163,6 +164,7 @@ public class FileToPngImpl implements FileToPng {
             fos.write(data);
             fos.flush();
             fos.close();
+            System.out.println("Fichero compuesto "+fichero.getNombreYExtenxion());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -219,6 +221,7 @@ public class FileToPngImpl implements FileToPng {
             FileOutputStream fos = new FileOutputStream(ffinal);
 
             for (Referencia referencia : referencias) {
+                System.out.println("Mergue "+referencia.getEntry().getParte()+" / "+referencia.getEntry().getFichero().getPartes() );
                 toPurge = new byte[sizeX * sizeY * 3];
 
                 File f = new File(referencia.getRuta());
@@ -277,7 +280,7 @@ public class FileToPngImpl implements FileToPng {
                 result[i] = bytes[i];
             }
         }
-        System.out.println("Numero de bytes tras la purga " + posicionFinal);
+
         return result;
     }
 

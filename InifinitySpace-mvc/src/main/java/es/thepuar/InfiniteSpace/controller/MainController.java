@@ -7,6 +7,7 @@ import java.util.List;
 import es.thepuar.InfiniteSpace.manager.ResourceManager;
 import es.thepuar.InfiniteSpace.google.client.PhotoClientJava;
 import es.thepuar.InfiniteSpace.model.CambioRutaForm;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Controller;
@@ -26,16 +27,18 @@ import es.thepuar.InfiniteSpace.service.api.FicheroService;
 import es.thepuar.InfiniteSpace.service.api.FileToPng;
 
 @Controller
-@SessionAttributes("ruta")
+
 public class MainController {
 
 	private static final java.io.File DATA_STORE_DIR = new java.io.File("H:\\Documentos\\InfiniteSpace\\zhola.png");
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 	private static final int LOCAL_RECEIVER_PORT = 61984;
 
-	private String ruta="";
+	@Autowired
+	private Ruta ruta;
+
 	public String getRuta(){
-		return this.getRuta();
+		return this.ruta.getRuta();
 	}
 
 
@@ -63,8 +66,9 @@ public class MainController {
 		mav.addObject("fichero", new Fichero());
 		ficheros = ficheroService.findAll();
 		mav.addObject("ficheros", ficheros);
-
-		File directorio = new File(ResourceManager.getProperty("ruta_upload"));
+		if(StringUtils.isBlank(ruta.getRuta()))
+			ruta.setRuta(ResourceManager.getProperty("ruta_upload"));
+		File directorio = new File(ruta.getRuta());
 		
 		List<FicheroDirectorio> ficheroDirectorios = new ArrayList<>();
 
@@ -84,17 +88,22 @@ public class MainController {
 
 	}
 
-	@PostMapping("action")
-	public String accion() {
-		System.out.println("Has pulsado accion");
-		converter.test();
-		return "index.html";
+	@PostMapping("ruta")
+	public String accion( String nuevaRuta) {
+		if(!StringUtils.isBlank(nuevaRuta)){
+			File f = new File(nuevaRuta);
+			if(f.isDirectory())
+				this.ruta.setRuta(nuevaRuta);
+		}
+
+
+		return "redirect:/";
 	}
 
 	@PostMapping("path")
 	public String accion(@ModelAttribute(value="form") CambioRutaForm form) {
 	System.out.println("Ruta ->"+form.getRuta());
-	this.ruta = form.getRuta();
+	this.ruta.setRuta(form.getRuta());
 		return "redirect:/";
 	}
 

@@ -21,11 +21,17 @@ public interface FicheroService {
 	public void downloadFile(Fichero fichero);
 	
 	public void uploadFile(Fichero fichero);
+
+	//public void uploadFileMax(File f);
 	
 	public Fichero fileToFichero(File f);
 
 	public void compareFile(String fileA, String fileB);
 
 	public boolean esPosibleDescargar(Fichero fichero);
+
+	public List<Fichero> findAllAloneFichero();
+
+
 
 }

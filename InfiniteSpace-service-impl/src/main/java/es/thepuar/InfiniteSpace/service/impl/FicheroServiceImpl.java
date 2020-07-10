@@ -107,6 +107,7 @@ public class FicheroServiceImpl implements FicheroService{
 		
 	}
 
+
 	@Override
 	public Fichero fileToFichero(File file) {
 		Fichero fichero = new Fichero();
@@ -125,10 +126,16 @@ public class FicheroServiceImpl implements FicheroService{
 		boolean resultado = true;
 		List<MapEntryPhoto> partes = this.mapEntryPhotoService.findByFichero(fichero);
 		for(MapEntryPhoto entry: partes){
+			System.out.println("Recuperando URL "+entry.getParte()+" / "+fichero.getPartes());
 			if(!mapEntryPhotoService.esPosibleDescargar(entry))
 				return false;
 		}
 		return resultado;
+	}
+
+	@Override
+	public List<Fichero> findAllAloneFichero() {
+		return this.dao.findAllAloneFichero();
 	}
 
 	@Override

@@ -45,19 +45,16 @@ public class MapEntryPhotoServiceImpl implements MapEntryPhotoService {
 
     @Override
     public boolean esPosibleDescargar(MapEntryPhoto entry) {
+
         String baseUrl = this.photoClient.getBaseUrl(entry);
 
-        boolean resultado = true;
-        if (entry.getUrl().equals(baseUrl))
+        if (!StringUtils.isBlank(baseUrl)) {
+            entry.setUrl(baseUrl);
+            this.save(entry);
             return true;
-        else {
-            if (!StringUtils.isBlank(baseUrl)) {
-                entry.setUrl(baseUrl);
-                this.save(entry);
-                return true;
-            } else
-                return false;
-        }
+        } else
+            return false;
+
     }
 
 

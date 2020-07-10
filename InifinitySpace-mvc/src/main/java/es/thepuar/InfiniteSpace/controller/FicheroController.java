@@ -6,6 +6,7 @@ import java.util.List;
 
 import es.thepuar.InfiniteSpace.google.client.PhotoClientJava;
 import es.thepuar.InfiniteSpace.manager.DownloadManager;
+import es.thepuar.InfiniteSpace.manager.UploadManager;
 import es.thepuar.InfiniteSpace.model.Fichero;
 import es.thepuar.InfiniteSpace.model.FicheroDirectorio;
 import es.thepuar.InfiniteSpace.model.MapEntryPhoto;
@@ -30,6 +31,9 @@ import es.thepuar.InfiniteSpace.service.api.FicheroService;
 public class FicheroController {
 
     @Autowired
+    Ruta ruta;
+
+    @Autowired
     FicheroService ficheroService;
 
     @Autowired
@@ -43,6 +47,9 @@ public class FicheroController {
 
     @Autowired
     DownloadManager downloadManager;
+
+    @Autowired
+    UploadManager uploadManager;
 
     @GetMapping("{id}")
     public ModelAndView detail(@PathVariable("id") Long id) {
@@ -120,7 +127,8 @@ public class FicheroController {
 
     @GetMapping("splitAndStore/{id}")
     public ModelAndView splitAndStore(@PathVariable("id") Long id) {
-        File directorio = new File("Z:\\App\\InfiniteSpace\\upload");
+        //File directorio = new File("Z:\\App\\InfiniteSpace\\upload");
+        File directorio = new File(ruta.getRuta());
         File toSplit = null;
        // List<FicheroDirectorio> ficheroDirectorios = new ArrayList<>();
 
@@ -141,7 +149,34 @@ public class FicheroController {
                 this.photoService.uploadFiles(referencias);
                 for (Referencia referencia : referencias) {
                     this.mapEntryPhotoService.save(referencia.getEntry());
+                    File f = new File(referencia.getRuta());
+                    f.delete();
                 }
+
+            }
+        }
+        return new ModelAndView("redirect:/");
+    }
+
+    @GetMapping("splitAndStoreMAX/{id}")
+    public ModelAndView splitAndStoreMAX(@PathVariable("id") Long id) {
+        //File directorio = new File("Z:\\App\\InfiniteSpace\\upload");
+        File directorio = new File(ruta.getRuta());
+        File toSplit = null;
+        // List<FicheroDirectorio> ficheroDirectorios = new ArrayList<>();
+
+        if (directorio.isDirectory()) {
+            int i = 1;
+            for (File file : directorio.listFiles()) {
+                if (id == i) {
+                    toSplit = file;
+                }
+                i++;
+                // ficheroDirectorios.add(new FicheroDirectorio(i++, file));
+
+            }
+            if (toSplit != null) {
+               this.uploadManager.uploadFichero(toSplit);
 
             }
         }

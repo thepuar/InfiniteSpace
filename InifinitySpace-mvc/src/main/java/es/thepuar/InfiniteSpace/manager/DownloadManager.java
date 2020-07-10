@@ -39,6 +39,7 @@ public class DownloadManager implements Observer {
 
     public void downloadFichero(Fichero fichero) {
         if (this.ficheroService.esPosibleDescargar(fichero)) {
+            System.out.println("Todas las URLS recuperadas");
             List<MapEntryPhoto> partes = mapEntryPhotoService.findByFichero(fichero);
             Boolean anyadido = false;
             for (DownloadWorkerManager manager : managers) {
@@ -53,6 +54,8 @@ public class DownloadManager implements Observer {
                 managers.add(new DownloadWorkerManager(partes,this));
             }
 
+        }else{
+            System.out.println("No es posible realizar la descarga porque falta alguna url.");
         }
     }
 
@@ -64,15 +67,17 @@ public class DownloadManager implements Observer {
     public void update(Observable o, Object arg) {
 
         List<Referencia> referencias = (List<Referencia>)arg;
-        System.out.println("Construyendo fichero"+referencias.get(0).getEntry().getFichero().getNombre());
+        System.out.println("Construyendo fichero "+referencias.get(0).getEntry().getFichero().getNombre());
         this.fileToPng.createOriginalFromReferencia(ordenarPartes(referencias));
+
         this.deleteTempImage(referencias);
+        System.out.println(" #### Terminado  ####");
     }
 
     private List<Referencia> ordenarPartes(List<Referencia> referencias){
         List<Referencia> ordenado = new ArrayList<>();
         int partes = referencias.get(0).getEntry().getFichero().getPartes();
-        for(int i = 1;i<partes;i++){
+        for(int i = 1;i<=partes;i++){
             for(Referencia referencia : referencias){
                 if(referencia.getEntry().getParte()==i){
                     ordenado.add(referencia);

@@ -58,7 +58,7 @@ public class DownloadWorker extends Observable implements Runnable {
 
     public void parar(){
         this.running = false;
-        System.out.println("Parando hilo "+this.getNombreHilo());
+        System.out.println(" "+this.getNombreHilo());
     }
 
     @Override
@@ -70,16 +70,16 @@ public class DownloadWorker extends Observable implements Runnable {
     public void run() {
         while (running) {
             if (this.parte == null) {
-                System.out.println(this.nombreHilo + "Nada a descargar, voy a dormir");
+             //   System.out.println(this.nombreHilo + "Nada a descargar, voy a dormir");
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
-                    System.out.println("Parando hilo "+this.getNombreHilo());
+                    System.out.println(" "+this.getNombreHilo());
                     Thread.currentThread().interrupt();
 
                 }
             } else {
-                System.out.println(this.nombreHilo + " Comienzo a descargar parte " + parte.getParte());
+                System.out.println(this.nombreHilo + " Descargando parte " + parte.getParte());
                 try {
                     this.descarga(this.parte);
                 } catch (DownloadException e) {

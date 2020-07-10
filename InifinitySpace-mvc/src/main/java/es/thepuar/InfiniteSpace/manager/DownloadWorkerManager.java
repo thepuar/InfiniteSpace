@@ -19,15 +19,11 @@ public class DownloadWorkerManager extends Observable implements Observer {
     List<Referencia> referenciasTerminadas;
 
     public DownloadWorkerManager(List<MapEntryPhoto> entrys,DownloadManager manager) {
+        System.out.println("Creando DownloadWorkerManager");
         this.manager = manager;
         this.addObserver(manager);
         restart(entrys);
-        for (int i = 0; i < MAX_HILOS; i++) {
-            trabajadores[i] = new DownloadWorker("HILO_" + i, this);
-            hilos[i] = new Thread(trabajadores[i]);
-            trabajadores[i].addMapEntryPhoto(this.nextToDownload());
-            hilos[i].start();
-        }
+
     }
 
     public void restart(List<MapEntryPhoto> entrys) {
@@ -39,6 +35,12 @@ public class DownloadWorkerManager extends Observable implements Observer {
         }
         this.terminado = false;
         //Dar trabajo a cada hijo
+        for (int i = 0; i < MAX_HILOS; i++) {
+            trabajadores[i] = new DownloadWorker("HILO_DW_" + i, this);
+            hilos[i] = new Thread(trabajadores[i]);
+            trabajadores[i].addMapEntryPhoto(this.nextToDownload());
+            hilos[i].start();
+        }
 
 
     }
@@ -54,7 +56,7 @@ public class DownloadWorkerManager extends Observable implements Observer {
         checkTerminado();
         if (!terminado) {
             //No ha terminado, asignar otra parte a este hilo
-            System.out.println("Asignando otra descarga a " + dww.getNombreHilo());
+            //System.out.println("Asignando otra descarga a " + dww.getNombreHilo());
             dww.addMapEntryPhoto(nextToDownload());
         } else {
             System.out.println("He descargado todas las partes --> Parando los hilos");

@@ -43,7 +43,6 @@ public class PhotoClientJava {
             "https://www.googleapis.com/auth/photoslibrary.appendonly");
 
 
-
     private PhotosLibraryClient client = null;
 
     private String myId;
@@ -83,30 +82,38 @@ public class PhotoClientJava {
                     error.getCause().printStackTrace();
                 } else {
                     String uploadToken = uploadResponse.getUploadToken().get();
+                    boolean conseguido = false;
+                    while (!conseguido) {
+                        try {
+                            NewMediaItem newMediaItem = NewMediaItemFactory.createNewMediaItem(uploadToken, "zhola",
+                                    "No soy un pdf");
+                            List<NewMediaItem> newItems = Arrays.asList(newMediaItem);
 
-
-                    try {
-                        NewMediaItem newMediaItem = NewMediaItemFactory.createNewMediaItem(uploadToken, "zhola",
-                                "No soy un pdf");
-                        List<NewMediaItem> newItems = Arrays.asList(newMediaItem);
-
-                        BatchCreateMediaItemsResponse response = this.client.batchCreateMediaItems(newItems);
-                        for (NewMediaItemResult itemsResponse : response.getNewMediaItemResultsList()) {
-                            Status status = itemsResponse.getStatus();
-                            if (status.getCode() == Code.OK_VALUE) {
-                                MediaItem createdItem = itemsResponse.getMediaItem();
-                                System.out.println("Subido parte "+parte++ +"/"+referencia.getEntry().getFichero().getPartes());
-                                this.myId = createdItem.getId();
-                                String baseUrl = createdItem.getBaseUrl();
-                                if(!StringUtils.isBlank(baseUrl))
-                                    referencia.getEntry().setUrl(createdItem.getBaseUrl());
-                                referencia.getEntry().setMediaId(myId);
-                            } else {
-                                // The item could not be created. Check the status and try again
+                            BatchCreateMediaItemsResponse response = this.client.batchCreateMediaItems(newItems);
+                            for (NewMediaItemResult itemsResponse : response.getNewMediaItemResultsList()) {
+                                Status status = itemsResponse.getStatus();
+                                if (status.getCode() == Code.OK_VALUE) {
+                                    MediaItem createdItem = itemsResponse.getMediaItem();
+                                    System.out.println("Subido parte " + referencia.getEntry().getParte() + "/" + referencia.getEntry().getFichero().getPartes());
+                                    this.myId = createdItem.getId();
+                                    String baseUrl = createdItem.getBaseUrl();
+                                    if (!StringUtils.isBlank(baseUrl))
+                                        referencia.getEntry().setUrl(createdItem.getBaseUrl());
+                                    referencia.getEntry().setMediaId(myId);
+                                } else {
+                                    // The item could not be created. Check the status and try again
+                                }
+                            }
+                            conseguido = true;
+                        } catch (ApiException e) {
+                            e.printStackTrace();
+                            System.out.println("Ha fallado, reintentando en un minuto");
+                            try {
+                                Thread.sleep(60000);
+                            } catch (InterruptedException interruptedException) {
+                                interruptedException.printStackTrace();
                             }
                         }
-                    } catch (ApiException e) {
-                        e.printStackTrace();
                     }
 
                 }
@@ -175,7 +182,6 @@ public class PhotoClientJava {
     }
 
 
-
     public List<Referencia> downloadFichero(List<MapEntryPhoto> partes) {
 
         List<Referencia> result = new ArrayList<>();
@@ -189,7 +195,7 @@ public class PhotoClientJava {
         return result;
     }
 
-    public String getBaseUrl(MapEntryPhoto parte){
+    public String getBaseUrl(MapEntryPhoto parte) {
         MediaItem item = this.client.getMediaItem(parte.getMediaId());
         String url = item.getBaseUrl();
         return url;

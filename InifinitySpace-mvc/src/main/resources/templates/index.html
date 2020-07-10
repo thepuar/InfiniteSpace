@@ -19,8 +19,8 @@
 <div class="container">
 
 
-    <form action="#" th:action="@{/path}" method="post" th:object="${form}" >
-        <input type="text" th:field="*{ruta}"/>
+    <form action="#" th:action="@{/ruta}" method="post" >
+        <input type="text"  id="nuevaRuta"  name="nuevaRuta"/>
         <input type="submit" value="Cambiar de ruta"/>
     </form>
 
@@ -32,7 +32,7 @@
 
     <h1>Formularios</h1>
 
-    <form action="#" th:action="@{/action}" method="post">
+    <form action="#" th:action="@{/ruta}" method="post">
 
         <p>
             <input type="submit" value="Convertir fichero en png"/>
