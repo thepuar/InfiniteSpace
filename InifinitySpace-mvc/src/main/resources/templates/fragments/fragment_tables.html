@@ -112,8 +112,27 @@
             <td th:text="${pelicula.nombre}"></td>
             <td th:text="${pelicula?.fichero?.Id}"></td>
             <td><a th:href="@{/pelicula/delete/{id}(id=${pelicula.Id})}">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 
-
+<div th:fragment="tabla_series">
+    <h2>Tabla de Peliculas</h2>
+    <table class="table table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="row">Id</th>
+            <th scope="row">Nombre</th>
+            <th scope="row">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="serie : ${series}">
+            <td th:text="${serie.Id}"></td>
+            <td th:text="${serie.nombre}"></td>
+            <td><a th:href="@{/serie/delete/{id}(id=${serie.Id})}">Delete</a>
             </td>
         </tr>
         </tbody>

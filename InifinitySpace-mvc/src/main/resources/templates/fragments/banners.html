@@ -31,7 +31,7 @@
                         aria-expanded="false"> Peliculas </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" th:href="@{/pelicula}">Ver todas</a>
-                        <a class="dropdown-item" th:href="@{pelicula/create}">Añadir Pelicula</a>
+                        <a class="dropdown-item" th:href="@{pelicula/create}">Añadir pelicula</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#">Experar</a>
                     </div>
@@ -43,8 +43,8 @@
                         role="button" data-toggle="dropdown" aria-haspopup="true"
                         aria-expanded="false"> Series </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Ver todos</a> <a
-                            class="dropdown-item" href="#">Añadir serie</a>
+                        <a class="dropdown-item" th:href="@{/serie}">Ver todos</a> <a
+                            class="dropdown-item" th:href="@{/serie/create}">Añadir serie</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#">Experar</a>
                     </div>

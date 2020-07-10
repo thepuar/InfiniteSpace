@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="@{~/layout/simple-layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear pelicula</title>
+</head>
+<body>
+<div  layout:fragment="content">
+    Formulario para crear series
+
+    <form th:object="${serie}" method="POST"  th:action="@{/serie/add}">
+        <div class="form-group">
+            <label for="inputNombre">Nombre de la pelicula</label>
+            <input type="text" class="form-control" id="inputNombre" aria-describedby="emailHelp" th:field="*{nombre}">
+            <small id="emailHelp" class="form-text text-muted">Introduce el nombre de la serie</small>
+        </div>
+
+
+        <br/>
+        <button type="submit" class="btn btn-primary">Crear</button>
+    </form>
+</div>
+</body>
+</html>

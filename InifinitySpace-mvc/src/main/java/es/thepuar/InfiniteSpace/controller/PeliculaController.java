@@ -22,11 +22,6 @@ public class PeliculaController {
     @Autowired
     FicheroService ficheroService;
 
-    @GetMapping("{id}")
-    public ModelAndView detail(@PathVariable("id") Long id) {
-        return null;
-    }
-
     @GetMapping("")
     public ModelAndView list(){
         List<Pelicula> peliculas = this.peliculaService.findAll();
@@ -34,6 +29,13 @@ public class PeliculaController {
         mav.addObject("peliculas",peliculas);
         return mav;
     }
+
+    @GetMapping("{id}")
+    public ModelAndView detail(@PathVariable("id") Long id) {
+        return null;
+    }
+
+
 
 
     @GetMapping("create")
