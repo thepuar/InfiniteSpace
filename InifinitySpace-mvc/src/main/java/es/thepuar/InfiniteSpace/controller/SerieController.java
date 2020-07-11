@@ -1,7 +1,5 @@
 package es.thepuar.InfiniteSpace.controller;
 
-import es.thepuar.InfiniteSpace.model.Fichero;
-import es.thepuar.InfiniteSpace.model.Pelicula;
 import es.thepuar.InfiniteSpace.model.Serie;
 import es.thepuar.InfiniteSpace.service.api.SerieService;
 import org.springframework.beans.factory.annotation.Autowired;

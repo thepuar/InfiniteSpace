@@ -3,10 +3,7 @@ package es.thepuar.InfiniteSpace.workers;
 import es.thepuar.InfiniteSpace.google.client.PhotoClientJava;
 import es.thepuar.InfiniteSpace.manager.UploadWorkerManager;
 import es.thepuar.InfiniteSpace.model.Referencia;
-import es.thepuar.InfiniteSpace.service.api.FicheroService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.thymeleaf.spring5.context.SpringContextUtils;
 
 import java.util.List;
 import java.util.Observable;

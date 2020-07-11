@@ -2,7 +2,6 @@ package es.thepuar.InfiniteSpace.manager;
 
 import es.thepuar.InfiniteSpace.google.client.PhotoClientJava;
 import es.thepuar.InfiniteSpace.model.Fichero;
-import es.thepuar.InfiniteSpace.model.MapEntryPhoto;
 import es.thepuar.InfiniteSpace.model.Referencia;
 import es.thepuar.InfiniteSpace.service.api.FicheroService;
 import es.thepuar.InfiniteSpace.service.api.FileToPng;
