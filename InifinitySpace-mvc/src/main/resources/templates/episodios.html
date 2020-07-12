@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="@{~/layout/simple-layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Peliculas</title>
+</head>
+<body>
+<div  layout:fragment="content">
+
+    <div th:insert="fragments/fragment_tables.html :: tabla_episodios"></div>
+</div>
+</body>
+</html>

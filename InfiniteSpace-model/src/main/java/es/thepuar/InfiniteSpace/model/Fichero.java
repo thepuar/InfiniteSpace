@@ -25,6 +25,9 @@ public class Fichero {
 	private Integer partes;
 	private Boolean uploaded;
 
+	public Fichero(){
+	}
+
 	@Transient
 	private File file;
 
@@ -36,7 +39,7 @@ public class Fichero {
 			return file.getAbsolutePath();
 	}
 
-	public String getNombreYExtenxion(){
+	public String getNombreYExtension(){
 		StringBuilder builder = new StringBuilder();
 		builder.append(this.getNombre());
 		builder.append(".");

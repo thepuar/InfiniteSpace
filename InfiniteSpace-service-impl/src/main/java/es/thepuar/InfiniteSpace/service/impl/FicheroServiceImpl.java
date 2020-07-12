@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 
+import es.thepuar.InfiniteSpace.utils.PrinterUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -100,6 +101,7 @@ public class FicheroServiceImpl implements FicheroService{
 	@Override
 	public void uploadFile(Fichero fichero) {
 		List<Referencia> referencias = converter.convertFichero2Png(fichero);
+		System.out.println("Partes creadas");
 		for(Referencia referencia : referencias) {
 			referencia.getEntry().setFichero(fichero);
 			this.mapEntryPhotoService.save(referencia.getEntry());
@@ -125,11 +127,13 @@ public class FicheroServiceImpl implements FicheroService{
 	public boolean esPosibleDescargar(Fichero fichero) {
 		boolean resultado = true;
 		List<MapEntryPhoto> partes = this.mapEntryPhotoService.findByFichero(fichero);
+		System.out.println("Recuperando URL de "+fichero.getPartes()+" partes");
 		for(MapEntryPhoto entry: partes){
-			System.out.println("Recuperando URL "+entry.getParte()+" / "+fichero.getPartes());
+			PrinterUtil.printParte(entry.getParte());
 			if(!mapEntryPhotoService.esPosibleDescargar(entry))
 				return false;
 		}
+		System.out.println();
 		return resultado;
 	}
 

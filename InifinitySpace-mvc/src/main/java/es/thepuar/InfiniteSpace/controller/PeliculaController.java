@@ -58,6 +58,6 @@ public class PeliculaController {
     public ModelAndView deletePelicula(@PathVariable("id") Long id) {
 
         this.peliculaService.delete(this.peliculaService.findById(id));
-        return new ModelAndView("redirect:/");
+        return new ModelAndView("redirect:/pelicula");
     }
 }

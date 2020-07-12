@@ -7,6 +7,7 @@ import es.thepuar.InfiniteSpace.model.Referencia;
 import es.thepuar.InfiniteSpace.service.api.FicheroService;
 import es.thepuar.InfiniteSpace.service.api.FileToPng;
 import es.thepuar.InfiniteSpace.service.api.MapEntryPhotoService;
+import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -65,11 +66,14 @@ public class DownloadManager implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-
+        StopWatch watch = new StopWatch();
+        watch.start();
         List<Referencia> referencias = (List<Referencia>)arg;
-        System.out.println("Construyendo fichero "+referencias.get(0).getEntry().getFichero().getNombre());
+        System.out.println("Construyendo fichero "+referencias.get(0).getEntry().getFichero().getNombreYExtension());
+        System.out.println("Uniendo "+referencias.get(0).getEntry().getFichero().getPartes()+" partes.");
         this.fileToPng.createOriginalFromReferencia(ordenarPartes(referencias));
-
+        watch.stop();
+        System.out.println("\nConstruido en: "+watch.getTime()/1000+" segundos");
         this.deleteTempImage(referencias);
         System.out.println(" #### Terminado  ####");
     }

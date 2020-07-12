@@ -18,6 +18,7 @@ import com.google.rpc.Status;
 
 import es.thepuar.InfiniteSpace.model.MapEntryPhoto;
 import es.thepuar.InfiniteSpace.model.Referencia;
+import es.thepuar.InfiniteSpace.utils.PrinterUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -94,7 +95,7 @@ public class PhotoClientJava {
                                 Status status = itemsResponse.getStatus();
                                 if (status.getCode() == Code.OK_VALUE) {
                                     MediaItem createdItem = itemsResponse.getMediaItem();
-                                    System.out.println("Subido parte " + referencia.getEntry().getParte() + "/" + referencia.getEntry().getFichero().getPartes());
+                                    PrinterUtil.printParte(referencia.getEntry().getParte());
                                     this.myId = createdItem.getId();
                                     String baseUrl = createdItem.getBaseUrl();
                                     if (!StringUtils.isBlank(baseUrl))
@@ -106,8 +107,8 @@ public class PhotoClientJava {
                             }
                             conseguido = true;
                         } catch (ApiException e) {
-                            e.printStackTrace();
-                            System.out.println("Ha fallado, reintentando en un minuto");
+                            //e.printStackTrace();
+                            System.out.println("LIMITE ALCANZADO Ha fallado, reintentando en un minuto");
                             try {
                                 Thread.sleep(60000);
                             } catch (InterruptedException interruptedException) {

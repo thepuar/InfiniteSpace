@@ -12,6 +12,8 @@ import java.util.Observer;
 
 public class UploadWorkerManager extends Observable implements Observer {
 
+    private boolean trabajando = false;
+
     private int MAX_HILOS = 2;
     private Thread[] hilos = new Thread[MAX_HILOS];
     private UploadWorker[] trabajadores = new UploadWorker[MAX_HILOS];
@@ -21,7 +23,29 @@ public class UploadWorkerManager extends Observable implements Observer {
     private PhotoClientJava photoClient;
     private UploadManager uploadManager;
 
+    public UploadWorkerManager(ApplicationContext context, UploadManager manager){
+        this.trabajando = false;
+        this.uploadManager = manager;
+        this.context = context;
+        this.referencias = new ArrayList<>();
+        this.referenciasTerminadas = new ArrayList<>();
+        this.addObserver(manager);
+    }
+
+    public void uploadReferencias(List<Referencia> referencias){
+        this.referenciasTerminadas = new ArrayList<>();
+        this.trabajando = true;
+        this.referencias = referencias;
+        for (int i = 0; i < MAX_HILOS; i++) {
+            trabajadores[i] = new UploadWorker("HILO_UP_" + i, this.getSubList(referencias, i),this);
+            hilos[i] = new Thread(trabajadores[i]);
+            context.getAutowireCapableBeanFactory().autowireBean(trabajadores[i]);
+            hilos[i].start();
+        }
+    }
+
     public UploadWorkerManager(ApplicationContext context, List<Referencia> referencias, UploadManager manager) {
+        this.trabajando = true;
         this.uploadManager = manager;
         this.context = context;
         this.referencias = referencias;
@@ -33,8 +57,9 @@ public class UploadWorkerManager extends Observable implements Observer {
             context.getAutowireCapableBeanFactory().autowireBean(trabajadores[i]);
             hilos[i].start();
         }
-
     }
+
+
 
     @Override
     public void update(Observable o, Object value) {
@@ -42,12 +67,14 @@ public class UploadWorkerManager extends Observable implements Observer {
         this.referenciasTerminadas.addAll(referencias);
         if(referenciasTerminadas.size()== this.referencias.size()){
            //Ha terminado, no hace falta ordenar
+            this.trabajando = false;
             setChanged();
             notifyObservers(this.referenciasTerminadas);
+
         }
     }
 
-    public List<Referencia> getSubList(List<Referencia> referencias, int num_hilo) {
+    private List<Referencia> getSubList(List<Referencia> referencias, int num_hilo) {
         List<Referencia> result = new ArrayList<>();
         int cuentaHilos = 0;
         for (int i = 0; i < referencias.size(); i++) {
@@ -59,5 +86,13 @@ public class UploadWorkerManager extends Observable implements Observer {
                 cuentaHilos++;
         }
         return result;
+    }
+
+    public boolean isTrabajando() {
+        return trabajando;
+    }
+
+    public void setTrabajando(boolean trabajando) {
+        this.trabajando = trabajando;
     }
 }

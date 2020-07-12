@@ -14,6 +14,7 @@ import es.thepuar.InfiniteSpace.model.Fichero;
 import es.thepuar.InfiniteSpace.model.MapEntryPhoto;
 import es.thepuar.InfiniteSpace.model.Referencia;
 import es.thepuar.InfiniteSpace.service.api.FileToPng;
+import es.thepuar.InfiniteSpace.utils.PrinterUtil;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
@@ -66,14 +67,11 @@ public class FileToPngImpl implements FileToPng {
         byte[] result = new byte[tamanyo];
         int contador = 0;
         for (int i = position; i < (limit + position) ; i++) {
-            if (i == tamanyo - 1)
-                System.out.println("Para");
             if (contador < mylimit) {
                 result[contador] = bytes[i];
             } else {
                 if(!primer_null){
                     primer_null = true;
-                    System.out.println("Contador de bytes para el primer null posicion-> "+contador);
                 }
 
                 result[contador] = 0;
@@ -118,8 +116,7 @@ public class FileToPngImpl implements FileToPng {
         Referencia result = new Referencia(url, entry);
         try {
             ImageIO.write(bufferedImage, "png", outputfile);
-
-            System.out.println("Imagen creada " + url);
+            PrinterUtil.printParte(parte);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -159,12 +156,12 @@ public class FileToPngImpl implements FileToPng {
                 byte[] result = purgeEmptyData(toPurge);
             }
 
-            File ffinal = new File(ResourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtenxion());
+            File ffinal = new File(ResourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtension());
             FileOutputStream fos = new FileOutputStream(ffinal);
             fos.write(data);
             fos.flush();
             fos.close();
-            System.out.println("Fichero compuesto "+fichero.getNombreYExtenxion());
+            System.out.println("Fichero compuesto "+fichero.getNombreYExtension());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -217,11 +214,12 @@ public class FileToPngImpl implements FileToPng {
 
         int positionCompleted = 0;
         try {
-            File ffinal = new File(ResourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtenxion());
+            File ffinal = new File(ResourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtension());
             FileOutputStream fos = new FileOutputStream(ffinal);
 
             for (Referencia referencia : referencias) {
-                System.out.println("Mergue "+referencia.getEntry().getParte()+" / "+referencia.getEntry().getFichero().getPartes() );
+                PrinterUtil.printParte(referencia.getEntry().getParte());
+
                 toPurge = new byte[sizeX * sizeY * 3];
 
                 File f = new File(referencia.getRuta());
@@ -300,6 +298,8 @@ public class FileToPngImpl implements FileToPng {
      */
     @Override
     public List<Referencia> convertFichero2Png(Fichero fichero) {
+        int partes = ((int)fichero.getFile().length()/limit) +1;
+        System.out.println("Creando "+ partes+" partes de "+fichero.getNombreYExtension());
         List<Referencia> response = new ArrayList<>();
         File f = fichero.getFile();
 
@@ -308,7 +308,6 @@ public class FileToPngImpl implements FileToPng {
             FileInputStream in = new FileInputStream(f);
             byte[] bytes = IOUtils.toByteArray(in);
             in.close();
-            System.out.println("Numero de bytes totales de "+fichero.getNombre()+" "+ bytes.length);
             int parte = 1;
             for (int i = 0; i < bytes.length; i += limit) {
                 //Bytes para crear la imagen

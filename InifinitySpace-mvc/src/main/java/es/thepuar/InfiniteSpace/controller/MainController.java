@@ -2,6 +2,7 @@ package es.thepuar.InfiniteSpace.controller;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import es.thepuar.InfiniteSpace.manager.ResourceManager;
@@ -11,9 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.api.client.json.JsonFactory;
@@ -29,114 +28,124 @@ import es.thepuar.InfiniteSpace.service.api.FileToPng;
 
 public class MainController {
 
-	private static final java.io.File DATA_STORE_DIR = new java.io.File("H:\\Documentos\\InfiniteSpace\\zhola.png");
-	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-	private static final int LOCAL_RECEIVER_PORT = 61984;
+    private static final java.io.File DATA_STORE_DIR = new java.io.File("H:\\Documentos\\InfiniteSpace\\zhola.png");
+    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    private static final int LOCAL_RECEIVER_PORT = 61984;
 
-	@Autowired
-	private Ruta ruta;
+    @Autowired
+    private Ruta ruta;
 
-	public String getRuta(){
-		return this.ruta.getRuta();
-	}
-
-
-	private String token = "";
-
-	@Autowired
-	FicheroService ficheroService;
-
-	@Autowired
-	FileToPng converter;
+    public String getRuta() {
+        return this.ruta.getRuta();
+    }
 
 
+    private String token = "";
 
-	@Autowired
-	PhotoRestClient photoRestClient;
+    @Autowired
+    FicheroService ficheroService;
 
-	@Autowired
-	PhotoClientJava clienteJava;
-
-	private List<Fichero> ficheros;
-
-	@GetMapping("")
-	public ModelAndView inicio() {
-		ModelAndView mav = new ModelAndView("index");
-		mav.addObject("fichero", new Fichero());
-		ficheros = ficheroService.findAll();
-		mav.addObject("ficheros", ficheros);
-		if(StringUtils.isBlank(ruta.getRuta()))
-			ruta.setRuta(ResourceManager.getProperty("ruta_upload"));
-		File directorio = new File(ruta.getRuta());
-		
-		List<FicheroDirectorio> ficheroDirectorios = new ArrayList<>();
-
-		if (directorio.isDirectory()) {
-			int i = 1;
-			for(File file : directorio.listFiles()) {
-				ficheroDirectorios.add(new FicheroDirectorio(i++,file));
-				
-			}
-			mav.addObject("files",ficheroDirectorios);
-			mav.addObject("form",new CambioRutaForm());
-		}
+    @Autowired
+    FileToPng converter;
 
 
+    @Autowired
+    PhotoRestClient photoRestClient;
 
-		return mav;
+    @Autowired
+    PhotoClientJava clienteJava;
 
-	}
+    private List<Fichero> ficheros;
 
-	@PostMapping("ruta")
-	public String accion( String nuevaRuta) {
-		if(!StringUtils.isBlank(nuevaRuta)){
-			File f = new File(nuevaRuta);
-			if(f.isDirectory())
-				this.ruta.setRuta(nuevaRuta);
-		}
+    @GetMapping("")
+    public ModelAndView inicio() {
+        ModelAndView mav = new ModelAndView("index");
+        mav.addObject("fichero", new Fichero());
+        ficheros = ficheroService.findAll();
+        mav.addObject("ficheros", ficheros);
+        if (StringUtils.isBlank(ruta.getRuta()))
+            ruta.setRuta(ResourceManager.getProperty("ruta_upload"));
+        File directorio = new File(ruta.getRuta());
+
+        List<FicheroDirectorio> ficheroDirectorios = new ArrayList<>();
+
+        if (directorio.isDirectory()) {
+            ficheroDirectorios.add(new FicheroDirectorio(0, ruta.getFile().getParentFile(), ".."));
+            int i = 1;
+            for (File file : directorio.listFiles()) {
+                ficheroDirectorios.add(new FicheroDirectorio(i++, file));
+
+            }
+            mav.addObject("ruta",this.getRuta());
+            mav.addObject("files", ficheroDirectorios);
+            mav.addObject("form", new CambioRutaForm());
+        }
+
+        return mav;
+    }
+
+    @GetMapping("changedir")
+    public String abreDirectorio(@RequestParam("directory") Integer id) {
+        File directorio = new File(ruta.getRuta());
+        if (id == 0) {
+            this.ruta.setFile(this.ruta.getFile().getParentFile());
+        } else {
+            File nuevaRuta = Arrays.asList(directorio.listFiles()).get(id-1);
+            ruta.setRuta(nuevaRuta.getAbsolutePath());
+        }
+        return "redirect:/";
+    }
+
+    @PostMapping("ruta")
+    public String accion(String nuevaRuta) {
+        if (!StringUtils.isBlank(nuevaRuta)) {
+            File f = new File(nuevaRuta);
+            if (f.isDirectory())
+                this.ruta.setRuta(nuevaRuta);
+        }
 
 
-		return "redirect:/";
-	}
+        return "redirect:/";
+    }
 
-	@PostMapping("path")
-	public String accion(@ModelAttribute(value="form") CambioRutaForm form) {
-	System.out.println("Ruta ->"+form.getRuta());
-	this.ruta.setRuta(form.getRuta());
-		return "redirect:/";
-	}
+    @PostMapping("path")
+    public String accion(@ModelAttribute(value = "form") CambioRutaForm form) {
+        System.out.println("Ruta ->" + form.getRuta());
+        this.ruta.setRuta(form.getRuta());
+        return "redirect:/";
+    }
 
 
-	@PostMapping("convert")
-	public String convert() {
-		converter.convertFile2Png();
-		return "index.html";
-	}
+    @PostMapping("convert")
+    public String convert() {
+        converter.convertFile2Png();
+        return "index.html";
+    }
 
-	@GetMapping("inicio")
-	public String iniciar() {
-		photoRestClient.sendPost();
-		return "index.html";
-	}
+    @GetMapping("inicio")
+    public String iniciar() {
+        photoRestClient.sendPost();
+        return "index.html";
+    }
 
-	@PostMapping("upload")
-	public String funciona() {
-		System.out.println("Iniciando upload");
-		this.clienteJava.uploadFile();
+    @PostMapping("upload")
+    public String funciona() {
+        System.out.println("Iniciando upload");
+        this.clienteJava.uploadFile();
 
-		return "index.html";
+        return "index.html";
 
-	}
+    }
 
-	@PostMapping("/download")
-	public String descarga() {
-		this.clienteJava.downloadImage();
-		return "index.html";
-	}
+    @PostMapping("/download")
+    public String descarga() {
+        this.clienteJava.downloadImage();
+        return "index.html";
+    }
 
-	@GetMapping("dashboard")
-	public ModelAndView dashBoard(){
-		return new ModelAndView("dashboard");
-	}
+    @GetMapping("dashboard")
+    public ModelAndView dashBoard() {
+        return new ModelAndView("dashboard");
+    }
 
 }
