@@ -15,4 +15,6 @@ public interface PeliculaService {
     public void download(Pelicula pelicula);
 
     public void save(Pelicula pelicula);
+
+    public void completePelicula(Pelicula pelicula);
 }

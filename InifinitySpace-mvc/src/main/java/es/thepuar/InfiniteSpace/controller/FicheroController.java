@@ -3,7 +3,6 @@ package es.thepuar.InfiniteSpace.controller;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import es.thepuar.InfiniteSpace.google.client.PhotoClientJava;
@@ -16,6 +15,7 @@ import es.thepuar.InfiniteSpace.model.Referencia;
 import es.thepuar.InfiniteSpace.service.api.FileToPng;
 import es.thepuar.InfiniteSpace.service.api.MapEntryPhotoService;
 
+import es.thepuar.InfiniteSpace.utils.Ruta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

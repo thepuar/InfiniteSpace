@@ -32,6 +32,8 @@ public interface FicheroService {
 
 	public List<Fichero> findAllAloneFichero();
 
+	public boolean isVideo(Fichero fichero);
+
 
 
 }

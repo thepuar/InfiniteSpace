@@ -298,7 +298,7 @@ public class FileToPngImpl implements FileToPng {
      */
     @Override
     public List<Referencia> convertFichero2Png(Fichero fichero) {
-        int partes = ((int)fichero.getFile().length()/limit) +1;
+        int partes = (int)(fichero.getFile().length()/limit +1);
         System.out.println("Creando "+ partes+" partes de "+fichero.getNombreYExtension());
         List<Referencia> response = new ArrayList<>();
         File f = fichero.getFile();

@@ -11,6 +11,8 @@ public class FicheroDirectorio {
     private File file;
     private String display;
 
+    public FicheroDirectorio(){}
+
 
     public FicheroDirectorio(int id, File file) {
         this.Id = id;

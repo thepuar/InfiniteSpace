@@ -1,11 +1,7 @@
 package es.thepuar.InfiniteSpace.controller;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import es.thepuar.InfiniteSpace.manager.ResourceManager;
 import es.thepuar.InfiniteSpace.google.client.PhotoClientJava;
 import es.thepuar.InfiniteSpace.model.CambioRutaForm;
 import org.apache.commons.lang3.StringUtils;
@@ -20,30 +16,20 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 
 import es.thepuar.InfiniteSpace.google.rest.PhotoRestClient;
 import es.thepuar.InfiniteSpace.model.Fichero;
-import es.thepuar.InfiniteSpace.model.FicheroDirectorio;
-import es.thepuar.InfiniteSpace.service.api.FicheroService;
 import es.thepuar.InfiniteSpace.service.api.FileToPng;
 
 @Controller
 
-public class MainController {
+public class MainController extends DirectorioController{
 
     private static final java.io.File DATA_STORE_DIR = new java.io.File("H:\\Documentos\\InfiniteSpace\\zhola.png");
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final int LOCAL_RECEIVER_PORT = 61984;
 
-    @Autowired
-    private Ruta ruta;
-
-    public String getRuta() {
-        return this.ruta.getRuta();
-    }
-
 
     private String token = "";
 
-    @Autowired
-    FicheroService ficheroService;
+
 
     @Autowired
     FileToPng converter;
@@ -55,45 +41,21 @@ public class MainController {
     @Autowired
     PhotoClientJava clienteJava;
 
-    private List<Fichero> ficheros;
+    public MainController(){
+        this.rutaNavegacion ="";
+    }
 
     @GetMapping("")
     public ModelAndView inicio() {
         ModelAndView mav = new ModelAndView("index");
+        mav.addObject("ficheros",ficheroService.findAll());
         mav.addObject("fichero", new Fichero());
-        ficheros = ficheroService.findAll();
-        mav.addObject("ficheros", ficheros);
-        if (StringUtils.isBlank(ruta.getRuta()))
-            ruta.setRuta(ResourceManager.getProperty("ruta_upload"));
-        File directorio = new File(ruta.getRuta());
+        this.cargaFicherosDeLaRuta(mav);
 
-        List<FicheroDirectorio> ficheroDirectorios = new ArrayList<>();
-
-        if (directorio.isDirectory()) {
-            ficheroDirectorios.add(new FicheroDirectorio(0, ruta.getFile().getParentFile(), ".."));
-            int i = 1;
-            for (File file : directorio.listFiles()) {
-                ficheroDirectorios.add(new FicheroDirectorio(i++, file));
-
-            }
-            mav.addObject("ruta",this.getRuta());
-            mav.addObject("files", ficheroDirectorios);
-            mav.addObject("form", new CambioRutaForm());
-        }
+        mav.addObject("ruta",this.getRuta());
+        mav.addObject("form", new CambioRutaForm());
 
         return mav;
-    }
-
-    @GetMapping("changedir")
-    public String abreDirectorio(@RequestParam("directory") Integer id) {
-        File directorio = new File(ruta.getRuta());
-        if (id == 0) {
-            this.ruta.setFile(this.ruta.getFile().getParentFile());
-        } else {
-            File nuevaRuta = Arrays.asList(directorio.listFiles()).get(id-1);
-            ruta.setRuta(nuevaRuta.getAbsolutePath());
-        }
-        return "redirect:/";
     }
 
     @PostMapping("ruta")
@@ -101,17 +63,15 @@ public class MainController {
         if (!StringUtils.isBlank(nuevaRuta)) {
             File f = new File(nuevaRuta);
             if (f.isDirectory())
-                this.ruta.setRuta(nuevaRuta);
+                this.setRuta(nuevaRuta);
         }
-
-
         return "redirect:/";
     }
 
     @PostMapping("path")
     public String accion(@ModelAttribute(value = "form") CambioRutaForm form) {
         System.out.println("Ruta ->" + form.getRuta());
-        this.ruta.setRuta(form.getRuta());
+        this.setRuta(form.getRuta());
         return "redirect:/";
     }
 
@@ -148,4 +108,8 @@ public class MainController {
         return new ModelAndView("dashboard");
     }
 
+    @Override
+    protected void ponRuta() {
+        ;
+    }
 }

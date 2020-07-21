@@ -1,4 +1,4 @@
-package es.thepuar.InfiniteSpace.controller;
+package es.thepuar.InfiniteSpace.utils;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;

@@ -14,7 +14,7 @@ public class UploadWorkerManager extends Observable implements Observer {
 
     private boolean trabajando = false;
 
-    private int MAX_HILOS = 2;
+    private int MAX_HILOS = 1;
     private Thread[] hilos = new Thread[MAX_HILOS];
     private UploadWorker[] trabajadores = new UploadWorker[MAX_HILOS];
     List<Referencia> referenciasTerminadas;

@@ -21,7 +21,7 @@
             <td th:text="${file.Id}"></td>
             <!--Si es directorio, combierte en hipervinculo-->
             <td th:if="${file.file.isDirectory()}">
-                <a th:href="@{/changedir(directory=${file.Id})}">
+                <a th:href="@{|${navegacion}/changedir|(directory=${file.Id})}">
                     <i class="fas fa-folder-open"></i><span th:text="${file?.display}"></span>
                 </a>
             </td>
@@ -120,21 +120,38 @@
         <thead class="thead-dark">
         <tr>
             <th scope="row">Id</th>
+            <th scope="row">Cover</th>
             <th scope="row">Nombre</th>
-            <th scope="row">Fichero</th>
+            <th scope="row">Duracion</th>
+            <th scope="row">Resolucion</th>
+            <th scope="row">Tamaño</th>
             <th scope="row">Action</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="pelicula : ${peliculas}">
             <td th:text="${pelicula.Id}"></td>
+            <td><img th:if="${pelicula.getCaratula()!=null}" th:src="${pelicula.getCaratula()}" class="zoom" style="width: 20px; height: 28px;"/></td>
             <td th:text="${pelicula.nombre}"></td>
-            <td th:text="${pelicula?.fichero?.Id}"></td>
-            <td><a th:href="@{/pelicula/delete/{id}(id=${pelicula.Id})}">Delete</a>
+            <td th:text="${pelicula.getDuration()}"></td>
+            <td th:text="${pelicula.getAncho()+ 'x'+pelicula.getAlto()}"></td>
+            <td th:text="${pelicula.fichero.getMB()}"></td>
+            <td><a th:href="@{/pelicula/download/{id}(id=${pelicula.Id})}">Descargar</a> / <a th:href="@{/pelicula/delete/{id}(id=${pelicula.Id})}">Delete</a>
             </td>
         </tr>
         </tbody>
     </table>
+    <style>
+.zoom {
+
+  transition: transform .2s; /* Animation */
+  margin: 0 auto;
+}
+
+.zoom:hover {
+  transform: scale(10); /* (1000% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}
+</style>
 </div>
 
 <div th:fragment="tabla_series">

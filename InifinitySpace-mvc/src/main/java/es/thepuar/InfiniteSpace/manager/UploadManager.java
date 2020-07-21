@@ -2,6 +2,7 @@ package es.thepuar.InfiniteSpace.manager;
 
 import es.thepuar.InfiniteSpace.google.client.PhotoClientJava;
 import es.thepuar.InfiniteSpace.model.Fichero;
+import es.thepuar.InfiniteSpace.model.Pelicula;
 import es.thepuar.InfiniteSpace.model.Referencia;
 import es.thepuar.InfiniteSpace.service.api.FicheroService;
 import es.thepuar.InfiniteSpace.service.api.FileToPng;
@@ -62,6 +63,20 @@ public class UploadManager implements Observer {
         }
     }
 
+    public void uploadPelicula(Pelicula pelicula){
+        inicializar();
+        this.filesToUpload = Arrays.asList(pelicula.getFichero().getFile());
+        for (int i = 0; i < this.UPLOAD_MANAGERS; i++) {
+            UploadWorkerManager manager = findFree();
+            if (manager != null) {
+                if (isMoreWork())
+                    uploadPelicula(pelicula, manager);
+                else
+                    System.out.println("No hay más ficheros para subir");
+            }
+        }
+    }
+
     public void uploadDirectorio(File file){
         System.out.println("Subiendo directorio con "+file.list().length+" ficheros");
         List<String> ficheros = null;
@@ -70,8 +85,17 @@ public class UploadManager implements Observer {
         uploadFicheros(files);
     }
 
-    private void uploadFichero(File file, UploadWorkerManager manager) {
+    private void uploadPelicula(Pelicula pelicula, UploadWorkerManager manager){
+        this.indexFilesToUpload++;
+        Fichero fichero = pelicula.getFichero();
+        System.out.println("Subiendo Pelicula "+fichero.getNombreYExtension());
+        List<Referencia> referencias = this.fileService.convertFichero2Png(fichero);
+        this.ficheroService.save(fichero);
+        System.out.println("\nSubiendo partes del fichero");
+        manager.uploadReferencias(referencias);
+    }
 
+    private void uploadFichero(File file, UploadWorkerManager manager) {
         Fichero fichero = ficheroService.fileToFichero(file);
         System.out.println("Subiendo fichero "+fichero.getNombreYExtension());
         List<Referencia> referencias = this.fileService.convertFichero2Png(fichero);

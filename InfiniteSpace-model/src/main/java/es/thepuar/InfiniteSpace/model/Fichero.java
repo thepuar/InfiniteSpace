@@ -24,6 +24,7 @@ public class Fichero {
 	private Calendar fechaCreacion;
 	private Integer partes;
 	private Boolean uploaded;
+	private Integer segundos;
 
 	public Fichero(){
 	}
@@ -45,6 +46,10 @@ public class Fichero {
 		builder.append(".");
 		builder.append(this.getExtension());
 		return builder.toString();
+	}
+
+	public Double getMB(){
+		return new Double(this.getBytes()/1024/1024);
 	}
 
 }
