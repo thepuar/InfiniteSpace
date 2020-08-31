@@ -27,7 +27,6 @@ public class FileToPngImpl implements FileToPng {
     private final int limit = (1024 * 1024 * 2) - 1;// Limite de bytes (Numero de posiciones del array)
 
 
-
     /*
      * (non-Javadoc)
      *
@@ -63,14 +62,14 @@ public class FileToPngImpl implements FileToPng {
         boolean primer_null = false;
 
         int tamanyo = sizeX * sizeY * 3;
-        int mylimit = limit < (bytes.length - position) ? limit : (bytes.length - position) ;
+        int mylimit = limit < (bytes.length - position) ? limit : (bytes.length - position);
         byte[] result = new byte[tamanyo];
         int contador = 0;
-        for (int i = position; i < (limit + position) ; i++) {
+        for (int i = position; i < (limit + position); i++) {
             if (contador < mylimit) {
                 result[contador] = bytes[i];
             } else {
-                if(!primer_null){
+                if (!primer_null) {
                     primer_null = true;
                 }
 
@@ -83,6 +82,7 @@ public class FileToPngImpl implements FileToPng {
 
     /**
      * Crea una imagen a partir de arrays de bytes
+     *
      * @param bytes
      * @param parte
      * @return
@@ -127,6 +127,7 @@ public class FileToPngImpl implements FileToPng {
 
     /**
      * Crea un fichero a partir de imagenes
+     *
      * @param referencias
      */
     public void createFromImages(List<Referencia> referencias) {
@@ -152,7 +153,7 @@ public class FileToPngImpl implements FileToPng {
                         toPurge[position++] = (byte) b;
                     }
                 }
-                System.out.println("Purgando parte"+referencia.getEntry().getParte()+" / "+referencias.size());
+                System.out.println("Purgando parte" + referencia.getEntry().getParte() + " / " + referencias.size());
                 byte[] result = purgeEmptyData(toPurge);
             }
 
@@ -161,7 +162,7 @@ public class FileToPngImpl implements FileToPng {
             fos.write(data);
             fos.flush();
             fos.close();
-            System.out.println("Fichero compuesto "+fichero.getNombreYExtension());
+            System.out.println("Fichero compuesto " + fichero.getNombreYExtension());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -170,6 +171,7 @@ public class FileToPngImpl implements FileToPng {
 
     /**
      * Metodo para TEST
+     *
      * @param f
      */
     private void createFromImage(File f) {
@@ -256,6 +258,7 @@ public class FileToPngImpl implements FileToPng {
 
     /**
      * Recibe todos los bytes de un png y se encarga de recuperar solo los validos.
+     *
      * @param bytes Recibe los bytes de un png
      * @return
      */
@@ -293,13 +296,14 @@ public class FileToPngImpl implements FileToPng {
 
     /**
      * Crea un fichero en PNGs
+     *
      * @param fichero
      * @return
      */
     @Override
     public List<Referencia> convertFichero2Png(Fichero fichero) {
-        int partes = (int)(fichero.getFile().length()/limit +1);
-        System.out.println("Creando "+ partes+" partes de "+fichero.getNombreYExtension());
+        int partes = (int) (fichero.getFile().length() / limit + 1);
+        System.out.println("Creando " + partes + " partes de " + fichero.getNombreYExtension());
         List<Referencia> response = new ArrayList<>();
         File f = fichero.getFile();
 
@@ -307,6 +311,7 @@ public class FileToPngImpl implements FileToPng {
 
             FileInputStream in = new FileInputStream(f);
             byte[] bytes = IOUtils.toByteArray(in);
+
             in.close();
             int parte = 1;
             for (int i = 0; i < bytes.length; i += limit) {
@@ -325,7 +330,6 @@ public class FileToPngImpl implements FileToPng {
         }
 
         return response;
-
     }
 
     @Override
@@ -346,7 +350,7 @@ public class FileToPngImpl implements FileToPng {
 
                 for (int i = 0; i < bytesA.length; i++) {
                     if (bytesA[i] != bytesB[i]) {
-                        System.out.println("Diferencia: " + diferencia++ + " A-> " + bytesA[i] + " B-> "+bytesB[i]);
+                        System.out.println("Diferencia: " + diferencia++ + " A-> " + bytesA[i] + " B-> " + bytesB[i]);
                     }
                 }
             }

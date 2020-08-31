@@ -50,8 +50,8 @@ public class PeliculaServiceImpl implements PeliculaService {
     @Override
     public void completePelicula(Pelicula pelicula) {
         pelicula.setSegundos(XugglerUtil.getVideoSeconds(pelicula.getFichero().getFile()));
-        pelicula.setAncho(XugglerUtil.getVideoWidth(pelicula.getFichero().getFile()));
-        pelicula.setAlto(XugglerUtil.getVideoHeight(pelicula.getFichero().getFile()));
+      //  pelicula.setAncho(XugglerUtil.getVideoWidth(pelicula.getFichero().getFile()));
+      //  pelicula.setAlto(XugglerUtil.getVideoHeight(pelicula.getFichero().getFile()));
         pelicula.setCaratula(ImdbUtil.getCover(pelicula.getNombre()));
     }
 
