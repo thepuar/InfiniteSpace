@@ -32,7 +32,7 @@ public class FicheroServiceImpl implements FicheroService {
     PhotoClientJava photoClient;
 
     @Autowired
-    FileToPng converter;
+    FileToPng fileToPngImplV2;
 
     @Override
     public void save(Fichero fichero) {
@@ -84,7 +84,7 @@ public class FicheroServiceImpl implements FicheroService {
     public void downloadFile(Fichero fichero) {
         List<MapEntryPhoto> partes = this.mapEntryPhotoService.findByFichero(fichero);
         List<Referencia> referencias = this.photoClient.downloadFichero(partes);
-        this.converter.createOriginalFromReferencia(referencias);
+        this.fileToPngImplV2.createOriginalFromReferencia(referencias);
 
 
     }
@@ -101,7 +101,7 @@ public class FicheroServiceImpl implements FicheroService {
 
     @Override
     public void uploadFile(Fichero fichero) {
-        List<Referencia> referencias = converter.convertFichero2Png(fichero);
+        List<Referencia> referencias = fileToPngImplV2.convertFichero2Png(fichero);
         System.out.println("Partes creadas");
         for (Referencia referencia : referencias) {
             referencia.getEntry().setFichero(fichero);
@@ -121,7 +121,7 @@ public class FicheroServiceImpl implements FicheroService {
 
     @Override
     public void compareFile(String fileA, String fileB) {
-        this.converter.compareFiles("Z:\\App\\InfiniteSpace\\upload\\trincherasruthmalena.PNG", "Z:\\App\\InfiniteSpace\\final\\trincherasruthmalena.PNG");
+        this.fileToPngImplV2.compareFiles("Z:\\App\\InfiniteSpace\\upload\\trincherasruthmalena.PNG", "Z:\\App\\InfiniteSpace\\final\\trincherasruthmalena.PNG");
     }
 
     @Override

@@ -45,7 +45,7 @@ public class FicheroController {
     PhotoClientJava photoService;
 
     @Autowired
-    FileToPng fileService;
+    FileToPng fileToPngImplV2;
 
     @Autowired
     DownloadManager downloadManager;
@@ -120,7 +120,7 @@ public class FicheroController {
             }
             if (toSplit != null) {
                 Fichero fichero = ficheroService.fileToFichero(toSplit);
-                this.fileService.convertFichero2Png(fichero);
+                this.fileToPngImplV2.convertFichero2Png(fichero);
             }
 
         }
@@ -146,7 +146,7 @@ public class FicheroController {
             }
             if (toSplit != null) {
                 Fichero fichero = ficheroService.fileToFichero(toSplit);
-                List<Referencia> referencias = this.fileService.convertFichero2Png(fichero);
+                List<Referencia> referencias = this.fileToPngImplV2.convertFichero2Png(fichero);
                 this.ficheroService.save(fichero);
                 this.photoService.uploadFiles(referencias);
                 System.out.println("Subida completada");

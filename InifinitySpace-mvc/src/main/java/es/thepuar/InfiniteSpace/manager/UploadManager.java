@@ -27,7 +27,7 @@ public class UploadManager implements Observer {
     FicheroService ficheroService;
 
     @Autowired
-    FileToPng fileService;
+    FileToPng fileToPngImplV2;
 
     @Autowired
     PhotoClientJava photoService;
@@ -89,7 +89,7 @@ public class UploadManager implements Observer {
         this.indexFilesToUpload++;
         Fichero fichero = pelicula.getFichero();
         System.out.println("Subiendo Pelicula "+fichero.getNombreYExtension());
-        List<Referencia> referencias = this.fileService.convertFichero2Png(fichero);
+        List<Referencia> referencias = this.fileToPngImplV2.convertFichero2Png(fichero);
         this.ficheroService.save(fichero);
         System.out.println("\nSubiendo partes del fichero");
         manager.uploadReferencias(referencias);
@@ -98,7 +98,7 @@ public class UploadManager implements Observer {
     private void uploadFichero(File file, UploadWorkerManager manager) {
         Fichero fichero = ficheroService.fileToFichero(file);
         System.out.println("Subiendo fichero "+fichero.getNombreYExtension());
-        List<Referencia> referencias = this.fileService.convertFichero2Png(fichero);
+        List<Referencia> referencias = this.fileToPngImplV2.convertFichero2Png(fichero);
         this.ficheroService.save(fichero);
         System.out.println("\nSubiendo partes del fichero");
         manager.uploadReferencias(referencias);

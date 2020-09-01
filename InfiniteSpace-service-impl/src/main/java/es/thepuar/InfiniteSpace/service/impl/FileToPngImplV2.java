@@ -6,6 +6,8 @@ import es.thepuar.InfiniteSpace.model.MapEntryPhoto;
 import es.thepuar.InfiniteSpace.model.Referencia;
 import es.thepuar.InfiniteSpace.service.api.FileToPng;
 import es.thepuar.InfiniteSpace.utils.PrinterUtil;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -15,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+@Service
+@Qualifier("fileToPngImplV2")
 public class FileToPngImplV2 implements FileToPng {
 
     private final int sizeX = 1920;

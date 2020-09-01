@@ -29,7 +29,7 @@ public class DownloadManager implements Observer {
     FicheroService ficheroService;
 
     @Autowired
-    FileToPng fileToPng;
+    FileToPng fileToPngImplV2;
 
     List<DownloadWorkerManager> managers;
 
@@ -71,7 +71,7 @@ public class DownloadManager implements Observer {
         List<Referencia> referencias = (List<Referencia>)arg;
         System.out.println("Construyendo fichero "+referencias.get(0).getEntry().getFichero().getNombreYExtension());
         System.out.println("Uniendo "+referencias.get(0).getEntry().getFichero().getPartes()+" partes.");
-        this.fileToPng.createOriginalFromReferencia(ordenarPartes(referencias));
+        this.fileToPngImplV2.createOriginalFromReferencia(ordenarPartes(referencias));
         watch.stop();
         System.out.println("\nConstruido en: "+watch.getTime()/1000+" segundos");
         this.deleteTempImage(referencias);

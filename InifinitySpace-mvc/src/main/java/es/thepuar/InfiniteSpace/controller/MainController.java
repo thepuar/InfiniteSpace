@@ -32,7 +32,7 @@ public class MainController extends DirectorioController{
 
 
     @Autowired
-    FileToPng converter;
+    FileToPng fileToPngImplV2;
 
 
     @Autowired
@@ -78,7 +78,7 @@ public class MainController extends DirectorioController{
 
     @PostMapping("convert")
     public String convert() {
-        converter.convertFile2Png();
+        fileToPngImplV2.convertFile2Png();
         return "index.html";
     }
 
