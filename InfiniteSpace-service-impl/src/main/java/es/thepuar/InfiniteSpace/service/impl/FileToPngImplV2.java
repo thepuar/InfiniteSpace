@@ -46,7 +46,7 @@ public class FileToPngImplV2 implements FileToPng {
         int contador = 0;
         int positionCompleted = 0;
         try {
-            File ffinal = new File(ResourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtenxion());
+            File ffinal = new File(ResourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtension());
             FileOutputStream fos = new FileOutputStream(ffinal);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
 
@@ -102,7 +102,7 @@ public class FileToPngImplV2 implements FileToPng {
     @Override
     public List<Referencia> convertFichero2Png(Fichero fichero) {
         int partes = (int) (fichero.getFile().length() / limit + 1);
-        logger.info("Creando {} partes de {}",partes, fichero.getNombreYExtenxion());
+        logger.info("Creando {} partes de {}",partes, fichero.getNombreYExtension());
 
         fichero.setPartes(partes);
 

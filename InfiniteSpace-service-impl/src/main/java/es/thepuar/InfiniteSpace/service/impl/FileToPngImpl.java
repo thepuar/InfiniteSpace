@@ -158,12 +158,12 @@ public class FileToPngImpl implements FileToPng {
                 byte[] result = purgeEmptyData(toPurge);
             }
 
-            File ffinal = new File(ResourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtenxion());
+            File ffinal = new File(ResourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtension());
             FileOutputStream fos = new FileOutputStream(ffinal);
             fos.write(data);
             fos.flush();
             fos.close();
-            System.out.println("Fichero compuesto " + fichero.getNombreYExtenxion());
+            System.out.println("Fichero compuesto " + fichero.getNombreYExtension());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -217,7 +217,7 @@ public class FileToPngImpl implements FileToPng {
 
         int positionCompleted = 0;
         try {
-            File ffinal = new File(ResourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtenxion());
+            File ffinal = new File(ResourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtension());
             FileOutputStream fos = new FileOutputStream(ffinal);
 
             for (Referencia referencia : referencias) {
@@ -304,7 +304,7 @@ public class FileToPngImpl implements FileToPng {
     @Override
     public List<Referencia> convertFichero2Png(Fichero fichero) {
         int partes = (int) (fichero.getFile().length() / limit + 1);
-        System.out.println("Creando " + partes + " partes de " + fichero.getNombreYExtenxion());
+        System.out.println("Creando " + partes + " partes de " + fichero.getNombreYExtension());
         List<Referencia> response = new ArrayList<>();
         File f = fichero.getFile();
 
