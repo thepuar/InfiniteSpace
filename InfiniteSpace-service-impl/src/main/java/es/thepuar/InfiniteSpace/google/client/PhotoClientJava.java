@@ -18,7 +18,11 @@ import com.google.rpc.Status;
 
 import es.thepuar.InfiniteSpace.model.MapEntryPhoto;
 import es.thepuar.InfiniteSpace.model.Referencia;
+import es.thepuar.InfiniteSpace.service.impl.FicheroServiceImpl;
+import es.thepuar.InfiniteSpace.utils.PrinterUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -37,7 +41,7 @@ import java.util.List;
 
 @Service
 public class PhotoClientJava {
-
+    private static final Logger logger = LogManager.getLogger(PhotoClientJava.class);
     private static final List<String> REQUIRED_SCOPES = ImmutableList.of(
             "https://www.googleapis.com/auth/photoslibrary.readonly",
             "https://www.googleapis.com/auth/photoslibrary.appendonly");
@@ -67,6 +71,7 @@ public class PhotoClientJava {
         UploadMediaItemRequest uploadRequest;
         RandomAccessFile file = null;
         int parte = 1;
+        logger.info("Subiendo {} partes",referencias.size());
         for (Referencia referencia : referencias) {
             try {
                 file = new RandomAccessFile(referencia.getRuta(), "r");
@@ -90,11 +95,12 @@ public class PhotoClientJava {
                             List<NewMediaItem> newItems = Arrays.asList(newMediaItem);
 
                             BatchCreateMediaItemsResponse response = this.client.batchCreateMediaItems(newItems);
+
                             for (NewMediaItemResult itemsResponse : response.getNewMediaItemResultsList()) {
                                 Status status = itemsResponse.getStatus();
                                 if (status.getCode() == Code.OK_VALUE) {
                                     MediaItem createdItem = itemsResponse.getMediaItem();
-                                    System.out.println("Subido parte " + referencia.getEntry().getParte() + "/" + referencia.getEntry().getFichero().getPartes());
+                                    PrinterUtil.printParte(referencia.getEntry().getParte(),referencias.size());
                                     this.myId = createdItem.getId();
                                     String baseUrl = createdItem.getBaseUrl();
                                     if (!StringUtils.isBlank(baseUrl))
@@ -106,8 +112,9 @@ public class PhotoClientJava {
                             }
                             conseguido = true;
                         } catch (ApiException e) {
-                            e.printStackTrace();
-                            System.out.println("Ha fallado, reintentando en un minuto");
+                            //e.printStackTrace();
+
+                            logger.debug("LIMITE ALCANZADO Ha fallado, reintentando en 60seg");
                             try {
                                 Thread.sleep(60000);
                             } catch (InterruptedException interruptedException) {
@@ -148,7 +155,7 @@ public class PhotoClientJava {
         } else {
             // If the upload is successful, get the uploadToken
             String uploadToken = uploadResponse.getUploadToken().get();
-            System.out.println("Token " + uploadToken);
+
             // Use this upload token to create a media item
 
             try {
@@ -166,7 +173,7 @@ public class PhotoClientJava {
                     if (status.getCode() == Code.OK_VALUE) {
                         // The item is successfully created in the user's library
                         MediaItem createdItem = itemsResponse.getMediaItem();
-                        System.out.println("Subido Id " + createdItem.getId());
+
                         this.myId = createdItem.getId();
                     } else {
                         // The item could not be created. Check the status and try again

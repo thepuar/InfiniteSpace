@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="headerfiles">
+    <meta charset="UTF-8"/>
+
+</head>
+<body>
+
+<div th:fragment="tabla_directorio_form">
+    <h2>Directorio [[${ruta}]]</h2>
+    <table class="table table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="row"></th>
+            <th scope="row">Id</th>
+            <th scope="row">Ruta</th>
+            <th scope="row">MB</th>
+            <th scope="row">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="file : ${files}">
+            <td>
+                <input type="radio" th:field="*{ficheroDirectorio}" th:value="${file.id}"/>
+            </td>
+            <td th:text="${file.Id}"></td>
+            <!--Si es directorio, combierte en hipervinculo-->
+            <td th:if="${file.file.isDirectory()}">
+                <a th:href="@{|${navegacion}/changedir|(directory=${file.Id})}">
+                    <i class="fas fa-folder-open"></i><span th:text="${file?.display}"></span>
+                </a>
+            </td>
+            <td th:if="${!file.file.isDirectory()}" >
+                <i th:if="${file.isVideo()}" class="far fa-file-video"></i>
+                <i th:if="${file.isImage()}"class="far fa-file-image"></i>
+                <i th:if="${file.isAudio()}"class="far fa-file-audio"></i>
+                <i th:if="${file.isUnknown()}"class="far fa-question-circle"></i>
+                <span th:text="${file?.display}"></span>
+            </td>
+
+            <!-- Si es directorio no pongas nada-->
+            <td th:if="${file.file.isDirectory()}"></td>
+            <td th:if="${!file.file.isDirectory()}"
+                th:text="${#numbers.formatDecimal(file.getMB(),1,'POINT',2,'COMMA')}"></td>
+
+            <!--<td th:text="${file.getMB()}"></td>-->
+            <td>
+                <!-- <a th:if="${file.file.isDirectory()}" th:href="@{/changedir(directory=${file.Id})}">Abrir</a>-->
+                <!-- <a th:href="@{/fichero/splitAndStore/{id}(id=${file.Id})}">SplitAndStore</a> -->
+                <a th:href="@{/fichero/splitAndStoreMAX/{id}(id=${file.Id})}">Upload</a>
+
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

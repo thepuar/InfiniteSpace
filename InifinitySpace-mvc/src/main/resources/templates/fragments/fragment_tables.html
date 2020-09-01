@@ -6,24 +6,43 @@
 </head>
 <body>
 <div th:fragment="tabla_directorio">
-    <h2>Tabla de directorio</h2>
+    <h2>Directorio [[${ruta}]]</h2>
     <table class="table table-striped">
         <thead class="thead-dark">
         <tr>
             <th scope="row">Id</th>
             <th scope="row">Ruta</th>
-            <th scope="row">KB</th>
+            <th scope="row">MB</th>
             <th scope="row">Action</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="file : ${files}">
             <td th:text="${file.Id}"></td>
-            <td th:text="${file?.file.getAbsolutePath()}"></td>
-            <td th:text="${file.getKb()}"></td>
+            <!--Si es directorio, combierte en hipervinculo-->
+            <td th:if="${file.file.isDirectory()}">
+                <a th:href="@{|${navegacion}/changedir|(directory=${file.Id})}">
+                    <i class="fas fa-folder-open"></i><span th:text="${file?.display}"></span>
+                </a>
+            </td>
+            <td th:if="${!file.file.isDirectory()}" >
+                <i th:if="${file.isVideo()}" class="far fa-file-video"></i>
+                <i th:if="${file.isImage()}"class="far fa-file-image"></i>
+                <i th:if="${file.isAudio()}"class="far fa-file-audio"></i>
+                <i th:if="${file.isUnknown()}"class="far fa-question-circle"></i>
+                <span th:text="${file?.display}"></span>
+            </td>
+
+            <!-- Si es directorio no pongas nada-->
+            <td th:if="${file.file.isDirectory()}"></td>
+            <td th:if="${!file.file.isDirectory()}"
+                th:text="${#numbers.formatDecimal(file.getMB(),1,'POINT',2,'COMMA')}"></td>
+
+            <!--<td th:text="${file.getMB()}"></td>-->
             <td>
-                 <a th:href="@{/fichero/splitAndStore/{id}(id=${file.Id})}">SplitAndStore</a>
-                / <a th:href="@{/fichero/splitAndStoreMAX/{id}(id=${file.Id})}">UploadMAX</a>
+                <!-- <a th:if="${file.file.isDirectory()}" th:href="@{/changedir(directory=${file.Id})}">Abrir</a>-->
+                <!-- <a th:href="@{/fichero/splitAndStore/{id}(id=${file.Id})}">SplitAndStore</a> -->
+                <a th:href="@{/fichero/splitAndStoreMAX/{id}(id=${file.Id})}">Upload</a>
 
             </td>
         </tr>
@@ -101,21 +120,38 @@
         <thead class="thead-dark">
         <tr>
             <th scope="row">Id</th>
+            <th scope="row">Cover</th>
             <th scope="row">Nombre</th>
-            <th scope="row">Fichero</th>
+            <th scope="row">Duracion</th>
+            <th scope="row">Resolucion</th>
+            <th scope="row">Tamaño</th>
             <th scope="row">Action</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="pelicula : ${peliculas}">
             <td th:text="${pelicula.Id}"></td>
+            <td><img th:if="${pelicula.getCaratula()!=null}" th:src="${pelicula.getCaratula()}" class="zoom" style="width: 20px; height: 28px;"/></td>
             <td th:text="${pelicula.nombre}"></td>
-            <td th:text="${pelicula?.fichero?.Id}"></td>
-            <td><a th:href="@{/pelicula/delete/{id}(id=${pelicula.Id})}">Delete</a>
+            <td th:text="${pelicula.getDuration()}"></td>
+            <td th:text="${pelicula.getAncho()+ 'x'+pelicula.getAlto()}"></td>
+            <td th:text="${pelicula.fichero.getMB()}"></td>
+            <td><a th:href="@{/pelicula/download/{id}(id=${pelicula.Id})}">Descargar</a> / <a th:href="@{/pelicula/delete/{id}(id=${pelicula.Id})}">Delete</a>
             </td>
         </tr>
         </tbody>
     </table>
+    <style>
+.zoom {
+
+  transition: transform .2s; /* Animation */
+  margin: 0 auto;
+}
+
+.zoom:hover {
+  transform: scale(10); /* (1000% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}
+</style>
 </div>
 
 <div th:fragment="tabla_series">
@@ -133,6 +169,27 @@
             <td th:text="${serie.Id}"></td>
             <td th:text="${serie.nombre}"></td>
             <td><a th:href="@{/serie/delete/{id}(id=${serie.Id})}">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:fragment="tabla_episodios">
+    <h2>Tabla de Episodios</h2>
+    <table class="table table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="row">Id</th>
+            <th scope="row">Nombre</th>
+            <th scope="row">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="episodio : ${episodios}">
+            <td th:text="${episodio.Id}"></td>
+            <td th:text="${episodio.nombre}"></td>
+            <td><a th:href="@{/episodio/delete/{id}(id=${episodio.Id})}">Delete</a>
             </td>
         </tr>
         </tbody>

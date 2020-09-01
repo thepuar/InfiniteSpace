@@ -70,7 +70,7 @@ class InfiniteSpaceApplicationTests {
 
 			this.fileToPng.createOriginalFromReferencia(referencias);
 
-			File freconstruido = new File(ResourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtenxion());
+			File freconstruido = new File(ResourceManager.getProperty("ruta_final") + "\\" + fichero.getNombreYExtension());
 			FileInputStream inReconstruido = new FileInputStream(freconstruido);
 			byte[] byteReconstruido = IOUtils.toByteArray(inReconstruido);
 

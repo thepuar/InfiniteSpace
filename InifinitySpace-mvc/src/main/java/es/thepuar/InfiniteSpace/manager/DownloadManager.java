@@ -7,6 +7,10 @@ import es.thepuar.InfiniteSpace.model.Referencia;
 import es.thepuar.InfiniteSpace.service.api.FicheroService;
 import es.thepuar.InfiniteSpace.service.api.FileToPng;
 import es.thepuar.InfiniteSpace.service.api.MapEntryPhotoService;
+import es.thepuar.InfiniteSpace.service.impl.FileToPngImplV2;
+import org.apache.commons.lang3.time.StopWatch;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +24,7 @@ import java.util.Observer;
 
 @Component
 public class DownloadManager implements Observer {
-
+    private static final Logger logger = LogManager.getLogger(DownloadManager.class);
     @Autowired
     MapEntryPhotoService mapEntryPhotoService;
 
@@ -28,7 +32,7 @@ public class DownloadManager implements Observer {
     FicheroService ficheroService;
 
     @Autowired
-    FileToPng fileToPng;
+    FileToPng fileToPngImplV2;
 
     List<DownloadWorkerManager> managers;
 
@@ -39,7 +43,8 @@ public class DownloadManager implements Observer {
 
     public void downloadFichero(Fichero fichero) {
         if (this.ficheroService.esPosibleDescargar(fichero)) {
-            System.out.println("Todas las URLS recuperadas");
+            logger.debug("Todas las URLS recuperadas");
+
             List<MapEntryPhoto> partes = mapEntryPhotoService.findByFichero(fichero);
             Boolean anyadido = false;
             for (DownloadWorkerManager manager : managers) {
@@ -55,7 +60,7 @@ public class DownloadManager implements Observer {
             }
 
         }else{
-            System.out.println("No es posible realizar la descarga porque falta alguna url.");
+            logger.error("No es posible realizar la descarga porque falta alguna url.");
         }
     }
 
@@ -65,13 +70,19 @@ public class DownloadManager implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-
+        StopWatch watch = new StopWatch();
+        watch.start();
         List<Referencia> referencias = (List<Referencia>)arg;
-        System.out.println("Construyendo fichero "+referencias.get(0).getEntry().getFichero().getNombre());
-        this.fileToPng.createOriginalFromReferencia(ordenarPartes(referencias));
 
+
+        logger.debug("Construyendo fichero {}",referencias.get(0).getEntry().getFichero().getNombreYExtension());
+        logger.debug("Uniendo {} partes", referencias.get(0).getEntry().getFichero().getPartes());
+
+        this.fileToPngImplV2.createOriginalFromReferencia(ordenarPartes(referencias));
+        watch.stop();
+        logger.debug("Construido en {} segundos",watch.getTime()/1000);
         this.deleteTempImage(referencias);
-        System.out.println(" #### Terminado  ####");
+
     }
 
     private List<Referencia> ordenarPartes(List<Referencia> referencias){
@@ -90,7 +101,8 @@ public class DownloadManager implements Observer {
     }
 
     private boolean deleteTempImage(List<Referencia> referencias){
-        System.out.println("Eliminando ficheros temporales");
+
+        logger.info("Eliminando {} ficheros temporales",referencias.size());
         boolean result = true;
         for(Referencia referencia : referencias){
             File f = new File(referencia.getRuta());

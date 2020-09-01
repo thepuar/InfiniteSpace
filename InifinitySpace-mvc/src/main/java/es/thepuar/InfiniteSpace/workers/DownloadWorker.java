@@ -6,10 +6,14 @@ import es.thepuar.InfiniteSpace.manager.ResourceManager;
 
 import es.thepuar.InfiniteSpace.model.MapEntryPhoto;
 import es.thepuar.InfiniteSpace.model.Referencia;
+import es.thepuar.InfiniteSpace.utils.PrinterUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Observable;
@@ -17,7 +21,7 @@ import java.util.Observer;
 
 @Service
 public class DownloadWorker extends Observable implements Runnable {
-
+    private static final Logger logger = LogManager.getLogger(DownloadWorker.class);
 
     private Boolean running;
     private MapEntryPhoto parte;
@@ -48,7 +52,7 @@ public class DownloadWorker extends Observable implements Runnable {
         try {
             this.downloadFromUrl(parte.getUrl1920(), rutaFichero);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("No se ha podido descargar la parte {} - {}", parte.getParte(), e.getLocalizedMessage());
         }
         Referencia referencia = new Referencia(rutaFichero, parte);
         setChanged();
@@ -79,12 +83,13 @@ public class DownloadWorker extends Observable implements Runnable {
 
                 }
             } else {
-                System.out.println(this.nombreHilo + " Descargando parte " + parte.getParte());
+
+                logger.info("{} Descargando parte {}", this.nombreHilo, parte.getParte());
                 try {
                     this.descarga(this.parte);
                 } catch (DownloadException e) {
-                    e.printStackTrace();
-                    System.out.println("No se ha podido descargar la parte " + this.parte.getParte() + "/" + this.parte.getFichero().getPartes() + " del fichero " + this.parte.getFichero().getNombre());
+
+                    logger.error(" {} / {} del fichero {}", this.parte.getParte(), this.parte.getFichero().getPartes(), this.parte.getFichero().getNombre());
                     this.parte = null;
                 }
             }
@@ -92,7 +97,7 @@ public class DownloadWorker extends Observable implements Runnable {
 
     }
 
-    public void downloadFromUrl(String url, String file) {
+    public void downloadFromUrl(String url, String file) throws IOException {
 
         try {
             BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
@@ -108,6 +113,8 @@ public class DownloadWorker extends Observable implements Runnable {
         } catch (Exception e) {
             // handle exception
             e.printStackTrace();
+
+            throw new IOException("Error descargando parte "+e.getLocalizedMessage());
         }
 
     }

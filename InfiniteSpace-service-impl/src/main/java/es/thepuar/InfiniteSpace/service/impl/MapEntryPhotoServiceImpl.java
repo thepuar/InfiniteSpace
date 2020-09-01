@@ -1,5 +1,6 @@
 package es.thepuar.InfiniteSpace.service.impl;
 
+import java.util.Collections;
 import java.util.List;
 
 import es.thepuar.InfiniteSpace.google.client.PhotoClientJava;
@@ -40,7 +41,9 @@ public class MapEntryPhotoServiceImpl implements MapEntryPhotoService {
 
     @Override
     public List<MapEntryPhoto> findByFichero(Fichero fichero) {
-        return dao.findByFichero(fichero);
+        List<MapEntryPhoto> partes =dao.findByFichero(fichero);
+        Collections.sort(partes);
+        return partes;
     }
 
     @Override

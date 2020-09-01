@@ -2,6 +2,7 @@ package es.thepuar.InfiniteSpace.controller;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import es.thepuar.InfiniteSpace.google.client.PhotoClientJava;
@@ -14,6 +15,7 @@ import es.thepuar.InfiniteSpace.model.Referencia;
 import es.thepuar.InfiniteSpace.service.api.FileToPng;
 import es.thepuar.InfiniteSpace.service.api.MapEntryPhotoService;
 
+import es.thepuar.InfiniteSpace.utils.Ruta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,7 +45,7 @@ public class FicheroController {
     PhotoClientJava photoService;
 
     @Autowired
-    FileToPng fileService;
+    FileToPng fileToPngImplV2;
 
     @Autowired
     DownloadManager downloadManager;
@@ -118,7 +120,7 @@ public class FicheroController {
             }
             if (toSplit != null) {
                 Fichero fichero = ficheroService.fileToFichero(toSplit);
-                this.fileService.convertFichero2Png(fichero);
+                this.fileToPngImplV2.convertFichero2Png(fichero);
             }
 
         }
@@ -127,39 +129,6 @@ public class FicheroController {
 
     @GetMapping("splitAndStore/{id}")
     public ModelAndView splitAndStore(@PathVariable("id") Long id) {
-        //File directorio = new File("Z:\\App\\InfiniteSpace\\upload");
-        File directorio = new File(ruta.getRuta());
-        File toSplit = null;
-       // List<FicheroDirectorio> ficheroDirectorios = new ArrayList<>();
-
-        if (directorio.isDirectory()) {
-            int i = 1;
-            for (File file : directorio.listFiles()) {
-                if (id == i) {
-                    toSplit = file;
-                }
-                i++;
-               // ficheroDirectorios.add(new FicheroDirectorio(i++, file));
-
-            }
-            if (toSplit != null) {
-                Fichero fichero = ficheroService.fileToFichero(toSplit);
-                List<Referencia> referencias = this.fileService.convertFichero2Png(fichero);
-                this.ficheroService.save(fichero);
-                this.photoService.uploadFiles(referencias);
-                for (Referencia referencia : referencias) {
-                    this.mapEntryPhotoService.save(referencia.getEntry());
-                    File f = new File(referencia.getRuta());
-                    f.delete();
-                }
-
-            }
-        }
-        return new ModelAndView("redirect:/");
-    }
-
-    @GetMapping("splitAndStoreMAX/{id}")
-    public ModelAndView splitAndStoreMAX(@PathVariable("id") Long id) {
         //File directorio = new File("Z:\\App\\InfiniteSpace\\upload");
         File directorio = new File(ruta.getRuta());
         File toSplit = null;
@@ -176,8 +145,39 @@ public class FicheroController {
 
             }
             if (toSplit != null) {
-               this.uploadManager.uploadFichero(toSplit);
+                Fichero fichero = ficheroService.fileToFichero(toSplit);
+                List<Referencia> referencias = this.fileToPngImplV2.convertFichero2Png(fichero);
+                this.ficheroService.save(fichero);
+                this.photoService.uploadFiles(referencias);
+                System.out.println("Subida completada");
+                for (Referencia referencia : referencias) {
+                    this.mapEntryPhotoService.save(referencia.getEntry());
+                    File f = new File(referencia.getRuta());
+                    f.delete();
+                }
 
+            }
+        }
+        return new ModelAndView("redirect:/");
+    }
+
+    @GetMapping("splitAndStoreMAX/{id}")
+    public ModelAndView splitAndStoreMAX(@PathVariable("id") Long id) {
+        File directorio = new File(ruta.getRuta());
+        File toSplit = null;
+        if (directorio.isDirectory()) {
+            int i = 1;
+            for (File file : directorio.listFiles()) {
+                if (id == i) {
+                    toSplit = file;
+                }
+                i++;
+            }
+            if (toSplit != null) {
+                if (!toSplit.isDirectory())
+                    this.uploadManager.uploadFicheros(Arrays.asList(toSplit));
+                else
+                    this.uploadManager.uploadDirectorio(toSplit);
             }
         }
         return new ModelAndView("redirect:/");
@@ -185,12 +185,12 @@ public class FicheroController {
 
     @GetMapping("compare")
     public ModelAndView compareImages() {
-        this.ficheroService.compareFile("","");
+        this.ficheroService.compareFile("", "");
         return new ModelAndView("redirect:/");
     }
 
     @GetMapping("downloadThread/{id}")
-    public ModelAndView descargaHilos(@PathVariable("id") Long id){
+    public ModelAndView descargaHilos(@PathVariable("id") Long id) {
         Fichero fichero = ficheroService.findById(id);
         downloadManager.downloadFichero(fichero);
 

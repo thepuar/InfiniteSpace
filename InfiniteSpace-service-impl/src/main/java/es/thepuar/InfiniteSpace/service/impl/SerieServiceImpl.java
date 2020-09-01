@@ -6,6 +6,7 @@ import es.thepuar.InfiniteSpace.service.api.SerieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.List;
 
 @Service
@@ -31,5 +32,10 @@ public class SerieServiceImpl implements SerieService {
     @Override
     public void save(Serie serie) {
         dao.save(serie);
+    }
+
+    @Override
+    public void uploadDirectory(File directory, Serie serie) {
+
     }
 }
