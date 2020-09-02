@@ -2,6 +2,7 @@ package es.thepuar.InfiniteSpace.service.impl;
 
 import es.thepuar.InfiniteSpace.dao.FicheroDAO;
 import es.thepuar.InfiniteSpace.google.client.PhotoClientJava;
+import es.thepuar.InfiniteSpace.manager.RequestUriManager;
 import es.thepuar.InfiniteSpace.model.Fichero;
 import es.thepuar.InfiniteSpace.model.MapEntryPhoto;
 import es.thepuar.InfiniteSpace.model.Referencia;
@@ -36,6 +37,9 @@ public class FicheroServiceImpl implements FicheroService {
     @Autowired
     FileToPng fileToPngImplV2;
 
+    @Autowired
+    RequestUriManager  requestUriManager;
+
     @Override
     public void save(Fichero fichero) {
         dao.save(fichero);
@@ -62,13 +66,17 @@ public class FicheroServiceImpl implements FicheroService {
     }
 
 
-    private String getNombreFileName(String fichero) {
-        String[] tokens = fichero.split("\\.");
-        return tokens[0];
+    public String getNombreFileName(String fichero) {
+        //String[] tokens = fichero.split("\\.");
+        int dotPosition = fichero.lastIndexOf('.');
+        String nombre = fichero.substring(0,dotPosition);
+        return nombre;
     }
 
-    private String getExtensionFileName(String fichero) {
-        return fichero.split("\\.")[1];
+    public String getExtensionFileName(String fichero) {
+        int dotPosition = fichero.lastIndexOf('.');
+        String extension = fichero.substring(dotPosition+1,fichero.length());
+        return extension;
     }
 
     private String getNombrePath(String path) {
@@ -133,17 +141,18 @@ public class FicheroServiceImpl implements FicheroService {
     @Override
     public boolean esPosibleDescargar(Fichero fichero) {
         //TODO Refactorizar para recuperar por hilos de descarga.
-        boolean resultado = true;
+
         List<MapEntryPhoto> partes = this.mapEntryPhotoService.findByFichero(fichero);
         logger.info("Recuperando URL de {} partes",fichero.getPartes());
 
-        for (MapEntryPhoto entry : partes) {
-            PrinterUtil.printParte(entry.getParte(),partes.size());
-            if (!mapEntryPhotoService.esPosibleDescargar(entry))
-                return false;
-        }
-
-        return resultado;
+//        for (MapEntryPhoto entry : partes) {
+//            PrinterUtil.printParte(entry.getParte(),partes.size());
+//            if (!mapEntryPhotoService.esPosibleDescargar(entry))
+//                return false;
+//        }
+        List<MapEntryPhoto> elResultado = requestUriManager.recoverUris(partes);
+        if(elResultado.size()!=partes.size())return false;
+        return true;
     }
 
     @Override
